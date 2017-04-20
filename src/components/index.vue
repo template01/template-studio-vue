@@ -1,6 +1,6 @@
 <template>
 <div id="index" class="">
-  <splash></splash>
+  <!-- <splash></splash> -->
   <projectlist></projectlist>
 </div>
 </template>
@@ -25,7 +25,7 @@ export default {
 <style lang="scss" scoped>@import "../assets/scss/base.scss";
 @include media("<tablet") {
     * {
-        display: none;
+        // display: none;
     }
 }
 
@@ -33,5 +33,8 @@ export default {
   font-family: Courier Prime;
   font-size: 50px;
   // font-weight:
+  @include media("<tablet") {
+    font-size: 20px;
+  }
 }
 </style>

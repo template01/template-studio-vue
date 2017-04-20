@@ -4,6 +4,10 @@ import Resource from 'vue-resource'
 // import Hello from '@/components/Hello'
 import index from '@/components/index'
 
+import vueSmoothScroll from 'vue-smoothscroll';
+Vue.use(vueSmoothScroll);
+
+
 Vue.use(Router)
 Vue.use(Resource)
 

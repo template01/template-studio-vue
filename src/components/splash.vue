@@ -24,7 +24,7 @@ export default {
 <style lang="scss" scoped>@import "../assets/scss/base.scss";
 @include media("<tablet") {
     * {
-        display: none;
+        // display: none;
     }
 }
 

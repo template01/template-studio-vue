@@ -23,5 +23,6 @@ export default {
 
 body,html{
   margin: 0;
+  overflow-x: hidden;
 }
 </style>
