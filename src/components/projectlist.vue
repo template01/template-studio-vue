@@ -1,42 +1,46 @@
 <template>
 <div id="projectlist" class="">
+
   <div id="projectlistHeader">
     <div>
-      <span>Digital</span>
+      <span @click="reorderByDigital()">Digital</span>
     </div>
     <div>
       <span>Hybrid</span>
     </div>
     <div>
-      <span>Analog</span>
+      <span @click="reorderByAnalog()">Analog</span>
     </div>
   </div>
   <div class="projectSingle" v-for="(project, index) in projectlistArray">
-    <div class="projectSingleInner">
-      <div class="projectSingleInnerTitle">
-        <div v-bind:style="{'height':projectlistArray[index].initialHeight+'px'}" v-if="projectlistArray[index].position === 'fixed'" class="projectSingleInnerTitleBackground"></div>
+    <div @mouseover="mouseOverTitle(index)" @mouseout="mouseOffTitle(index)" v-bind:class="{ isHovered: projectlistArray[index].itemHovered }" class="projectSingleInner">
+      <div @click="toggleCollapse(index)" class="projectSingleInnerTitle">
+
+        <transition name="fadeOpenMe">
+          <span v-if="projectlistArray[index].itemHovered && !projectlistArray[index].expanded" class="openMeTitle">Open Me!</span>
+        </transition>
+        <div v-bind:style="{'height':projectlistArray[index].initialHeight+10+'px'}" v-if="projectlistArray[index].position === 'fixed'" class="projectSingleInnerTitleBackground"></div>
         <div v-bind:data-scale="projectlistArray[index].typeScale" v-bind:style="{'top':'5px', 'position': projectlistArray[index].position, 'margin-left':+projectlistArray[index].marginLeft-projectlistArray[index].width+'px'}" class="projectSingleInnerTitleWrapper">
 
 
           <template v-if="projectlistArray[index].typeScale>7.5">
-            <span @click="toggleCollapse(index)" class="projectTitle projectTitleRight" v-html="project.content.title.rendered"></span>
+            <span class="projectTitle projectTitleRight" v-html="project.content.title.rendered"></span>
             <div class="projectControls projectControlsLeft">
-              <div v-bind:style="{'background':returnColor(index)}" @click="toggleCollapse(index)" v-if="projectlistArray[index].expanded" class="projectControlsClose projectControlsButton">
+              <div v-bind:style="{'background':returnColor(index)}" v-if="projectlistArray[index].expanded" class="projectControlsClose projectControlsButton">
               </div>
-              <div v-bind:style="{'background':returnColor(index)}" @click="toggleCollapse(index)" v-else class="projectControlsOpen projectControlsButton">
+              <div v-bind:style="{'background':returnColor(index)}" v-else class="projectControlsOpen projectControlsButton">
               </div>
             </div>
-
-          </template>
+</template>
           <template v-else>
-            <div class="projectControls projectControlsRight">
-              <div v-bind:style="{'background':returnColor(index)}" @click="toggleCollapse(index)" v-if="projectlistArray[index].expanded" class="projectControlsClose projectControlsButton">
-              </div>
-              <div v-bind:style="{'background':returnColor(index)}" @click="toggleCollapse(index)" v-else class="projectControlsOpen projectControlsButton">
-              </div>
-            </div>
-            <span @click="toggleCollapse(index)" class="projectTitle" v-html="project.content.title.rendered"></span>
-          </template>
+<div class="projectControls projectControlsRight">
+  <div v-bind:style="{'background':returnColor(index)}" v-if="projectlistArray[index].expanded" class="projectControlsClose projectControlsButton">
+  </div>
+  <div v-bind:style="{'background':returnColor(index)}" v-else class="projectControlsOpen projectControlsButton">
+  </div>
+</div>
+<span class="projectTitle" v-html="project.content.title.rendered"></span>
+</template>
         </div>
 
 
@@ -67,7 +71,10 @@ export default {
   data() {
     return {
       projectlistArray: [],
-      activeItem: {}
+      activeItem: {},
+      isActive: true,
+      orderedBy:''
+      // itemHovered: false
     }
   },
   created: function() {
@@ -76,15 +83,16 @@ export default {
       // this.projectlistArray.push(video)
       var vm = this
       response.body.forEach(function(entry, index) {
+        console.log(entry.title.rendered)
+        console.log(entry.acf.item_type)
 
         // var scale = [0,3.3333,6.6666,10]
-        var scale = [0,2.5,5,7.5,10]
-        var randomTypeScale = scale[Math.floor(Math.random() * scale.length)];
+        var scale = [0, 2.5, 5, 7.5, 10]
         vm.projectlistArray.push({
           'expanded': false,
           'content': entry,
           // 'typeScale': 10,
-          'typeScale': randomTypeScale,
+          'typeScale': parseFloat(entry.acf.item_type),
           // 'widthSet': "initial",
           'width': 0,
           'marginOffset': '0px',
@@ -94,6 +102,7 @@ export default {
           'marginTop': '0px',
           'initialHeight': 0,
           'marginLeft': '',
+          'itemHovered': false
           // 'marginLeft': ((Math.floor(Math.random() * 11)) * 1) * (window.innerWidth / 10),
         })
       });
@@ -110,12 +119,8 @@ export default {
     }, 100));
 
     window.addEventListener('resize', _.debounce(function() {
-      // setTimeout(function(){
       vm.positionTitles()
-      // setInterval(function(){
-      // vm.positionTitlesResize()
-      // },500)
-      // }, 1000)
+
     }, 500));
 
 
@@ -123,7 +128,62 @@ export default {
 
 
   },
+
+
+
   methods: {
+
+    reorderByOriginal: function() {
+      this.orderedBy = 'original'
+      this.projectlistArray = _.orderBy(this.projectlistArray, 'content.date','desc')
+    },
+
+    reorderByAnalog: function() {
+      if(this.orderedBy === 'analog'){
+        this.reorderByOriginal()
+      }else{
+        this.orderedBy = 'analog'
+        this.projectlistArray = _.orderBy(this.projectlistArray, 'typeScale','desc')
+      }
+    },
+
+    reorderByDigital: function() {
+      if(this.orderedBy === 'digital'){
+        this.reorderByOriginal()
+      }else{
+        this.orderedBy = 'digital'
+        this.projectlistArray = _.orderBy(this.projectlistArray, 'typeScale','asc')
+      }
+    },
+
+    mouseOverTitle: function(index) {
+      var vm = this
+      this.$set(this.projectlistArray[index], 'itemHovered', true)
+
+
+      setTimeout(function() {
+        if (vm.projectlistArray[index].itemHovered) {
+          console.log('hye')
+          vm.$set(vm.projectlistArray[index], 'itemHovered', true)
+          // vm.$set(vm.projectlistArray[index], 'marginLeft', 0 )
+
+
+        }
+
+      }, 500)
+    },
+
+    mouseOffTitle: function(index) {
+      // if(!this.projectlistArray[index].itemHovered){
+      // this.$set(this.projectlistArray[index], 'marginLeft', 5000 )
+      // }
+      if(!this.projectlistArray[index].expanded){
+
+        this.$set(this.projectlistArray[index], 'itemHovered', false)
+      }
+
+
+    },
 
     offset: function(el) {
       var rect = el.getBoundingClientRect(),
@@ -190,24 +250,36 @@ export default {
 
     positionTitles: function() {
       var vm = this
-      var marginAndPadding = 50
-      var windowWidth = window.innerWidth - marginAndPadding
+      var marginAndPadding = 40
+      // var windowWidth = window.innerWidth - marginAndPadding
+      var windowWidth = document.querySelectorAll('.projectSingleInnerTitle')[0].clientWidth
 
       this.projectlistArray.forEach(function(entry, index) {
         var elementWidthControls = vm.$el.querySelectorAll('.projectTitle')[index].offsetWidth
         var elementWidth = vm.outerWidth(vm.$el.querySelectorAll('.projectControls')[index])
         var elementWidthTotal = elementWidth + elementWidthControls
 
-        if(vm.projectlistArray[index].typeScale == 5){
-
-          vm.$set(vm.projectlistArray[index], 'marginLeft', vm.projectlistArray[index].typeScale * (window.innerWidth / 10) - marginAndPadding + 10 )
-        }else{
-          vm.$set(vm.projectlistArray[index], 'marginLeft', vm.projectlistArray[index].typeScale * (window.innerWidth / 10) )
-
+        if (vm.projectlistArray[index].typeScale == 0) {
+          vm.$set(vm.projectlistArray[index], 'marginLeft', vm.projectlistArray[index].typeScale * (windowWidth / 10))
         }
 
-        var diff = windowWidth - (elementWidthTotal + vm.projectlistArray[index].marginLeft + vm.getScrollBarWidth() - 24)
-        console.log(vm.projectlistArray[index].marginLeft)
+        if (vm.projectlistArray[index].typeScale == 2.5) {
+          vm.$set(vm.projectlistArray[index], 'marginLeft', vm.projectlistArray[index].typeScale * (windowWidth / 10) - 10)
+        }
+
+        if (vm.projectlistArray[index].typeScale == 5) {
+          vm.$set(vm.projectlistArray[index], 'marginLeft', vm.projectlistArray[index].typeScale * (windowWidth / 10) - 20)
+        }
+
+        if (vm.projectlistArray[index].typeScale == 7.5) {
+          vm.$set(vm.projectlistArray[index], 'marginLeft', vm.projectlistArray[index].typeScale * (windowWidth / 10) - 30)
+        }
+
+        if (vm.projectlistArray[index].typeScale == 10) {
+          vm.$set(vm.projectlistArray[index], 'marginLeft', vm.projectlistArray[index].typeScale * (windowWidth / 10))
+        }
+
+        var diff = windowWidth - (elementWidthTotal + vm.projectlistArray[index].marginLeft + vm.getScrollBarWidth() - 15)
 
         if (diff < 0) {
           vm.$set(vm.projectlistArray[index], 'width', Math.abs(diff))
@@ -352,6 +424,29 @@ export default {
 .fade-leave {
     max-height: 5000px;
 }
+
+
+.fadeOpenMe-enter-active,
+.fadeOpenMe-leave-active {
+    // transition: opacity .5s, max-height .5s
+    transition: opacity 0.5s;
+    -webkit-transition-delay: 0.5s; /* Safari */
+    transition-delay: 0.5s;
+}
+/* .fade-leave-active in <2.1.8 */
+.fadeOpenMe-enter,
+.fadeOpenMe-leave,
+.fadeOpenMe-leave-to {
+    opacity: 0;
+    -webkit-transition-delay: 0.5s; /* Safari */
+    transition-delay: 0.5s;
+}
+// /* .fade-leave-active in <2.1.8 */
+// .fadeOpenMe-enter-to,
+// .fadeOpenMe-leave {
+//     max-height: 5000px;
+// }
+
 @include media("<tablet") {
     * {
         // display: none;
@@ -367,8 +462,8 @@ export default {
         width: 100%;
         display: flex;
 
-        border-top: 4px solid black;
-        border-bottom: 4px solid black;
+        border-top: 3px solid black;
+        border-bottom: 3px solid black;
         padding: 20px;
         div {
             width: 33.333%;
@@ -390,11 +485,27 @@ export default {
     .projectSingle {
 
         width: 100%;
-        border-bottom: 4px solid black;
+        border-bottom: 3px solid black;
         &:first-of-type {
             // border-top: 4px solid black;
-        }
+        };
+
         .projectSingleInner {
+
+            &.isHovered {
+                .projectSingleInnerTitleWrapper{
+                  margin-left: 0 !important;
+
+                }
+                .projectTitleRight {
+                    text-align: left !important;
+                }
+                .projectTitle{
+                  max-width: 2000px !important;
+
+                }
+            };
+
             padding: 15px 20px 10px;
 
             .projectSingleInnerContent {
@@ -405,30 +516,48 @@ export default {
             // display: inline-block;
 
             .projectSingleInnerTitle {
+              cursor: pointer;
+              position: relative;
+
+                .openMeTitle{
+                  position: absolute;
+                  pointer-events: none;
+                  right: 0;
+                  top: 16px;
+
+                  @include media("<desktop") {
+                    display: none;
+                  }
+
+                }
 
                 .projectTitle {
                     float: left;
-                    cursor: pointer;
                     max-width: 360px;
-                    width: 360px;
-                        text-overflow: ellipsis;
-                        white-space: nowrap;
-                        overflow: hidden;
+                    // width: 360px;
+                    text-overflow: ellipsis;
+                    white-space: nowrap;
+                    overflow: hidden;
+
+                    -webkit-transition: max-width 0.75s;
+                    transition: max-width 0.75s;
+                    -webkit-transition-delay: 0.5s; /* Safari */
+                    transition-delay: 0.5s;
+
                 }
-                .projectTitleRight{
-                  text-align: right;
+                .projectTitleRight {
+                    text-align: right;
                 }
 
-                .projectControlsRight{
-                  margin-right: 20px;
+                .projectControlsRight {
+                    margin-right: 20px;
                 }
 
-                .projectControlsLeft{
-                  margin-left: 20px;
+                .projectControlsLeft {
+                    margin-left: 20px;
                 }
 
                 .projectControls {
-                    color: red;
                     clear: none;
                     width: 50px;
                     height: 100%;
@@ -453,7 +582,6 @@ export default {
                         -webkit-mask-size: cover;
                         mask-size: cover;
                         background-size: cover;
-                        cursor: pointer;
 
                     }
 
@@ -463,13 +591,9 @@ export default {
                         -webkit-mask-size: cover;
                         mask-size: cover;
                         background-size: cover;
-                        cursor: pointer;
 
                     }
                 }
-
-                top: 20px;
-                // display: inline-block;
 
                 .projectSingleInnerTitleBackground {
                     background: rgb(245, 245, 245);
@@ -483,18 +607,22 @@ export default {
 
                 .projectSingleInnerTitleWrapper {
                     // display: inline-block;
+                    pointer-events: none;
                     display: inline-flex;
                     width: initial;
                     // display: flex;
                     white-space: nowrap;
                     overflow: hidden;
-                    padding-bottom: 5px;
-
+                    padding-bottom: 12px;
+                    -webkit-transition: margin-left 0.5s;
+                    transition: margin-left 0.5s;
+                    -webkit-transition-delay: 0.3s; /* Safari */
+                    transition-delay: 0.3s;
                     span {
                         &:first-of-type {
                             // margin-right: 14px;
                         }
-                        top: 8px;
+                        top: 16px;
                         margin: 0;
                         position: relative;
 

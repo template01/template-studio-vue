@@ -31,10 +31,10 @@ export default {
 
 #index{
   font-family: Courier Prime;
-  font-size: 50px;
+  font-size: 40px;
   // font-weight:
   @include media("<tablet") {
-    font-size: 20px;
+    font-size: 30px;
   }
 }
 </style>
