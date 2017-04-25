@@ -2,3 +2,52 @@
 @import "../../node_modules/include-media/dist/_include-media.scss";
 
 $breakpoints: (phone: 640px, tablet: 768px, desktop: 1025px);
+
+$defaultPadding: 20px;
+
+$marginx1Desktop: 70px;
+
+.addMarginX1{
+  margin: $marginx1Desktop;
+}
+
+.addMarginX1Sides{
+  margin-left: $marginx1Desktop;
+  margin-right: $marginx1Desktop;
+}
+
+
+.addMarginX2{
+  margin: $marginx1Desktop*2;
+}
+
+.addMarginX2Sides{
+  margin-left: $marginx1Desktop*2;
+  margin-right: $marginx1Desktop*2;
+}
+
+.addMarginX2TopBottom{
+  margin-top: $marginx1Desktop*2;
+  margin-bottom: $marginx1Desktop*2;
+}
+
+.addMarginX1TopBottom{
+  margin-top: $marginx1Desktop;
+  margin-bottom: $marginx1Desktop;
+}
+
+.addMarginX2Top{
+  margin-top: $marginx1Desktop*2;
+}
+
+.addMarginX1Top{
+  margin-top: $marginx1Desktop;
+}
+
+.addMarginX2Bottom{
+  margin-bottom: $marginx1Desktop*2;
+}
+
+.addMarginX1Bottom{
+  margin-bottom: $marginx1Desktop;
+}

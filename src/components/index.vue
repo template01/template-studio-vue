@@ -2,6 +2,8 @@
 <div id="index" class="">
   <!-- <splash></splash> -->
   <projectlist></projectlist>
+  <splash></splash>
+
 </div>
 </template>
 
@@ -30,7 +32,7 @@ export default {
 }
 
 #index{
-  font-family: Courier Prime;
+  font-family: Karla;
   font-size: 40px;
   // font-weight:
   @include media("<tablet") {

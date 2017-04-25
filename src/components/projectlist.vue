@@ -1,42 +1,51 @@
+
 <template>
-<div id="projectlist" class="">
+<div id="projectlist" v-bind:style="{'height':tempHeight}" class="">
 
   <div id="projectlistHeader">
     <div>
-      <span @click="reorderByDigital()">Digital</span>
+      <span @click="reorderByDigital()"><span v-if="orderedBy === 'original' || orderedBy === 'analog'">← Online</span><span v-if="orderedBy === 'digital'">← Reset</span></span>
     </div>
     <div>
-      <span>Hybrid</span>
+      <transition name="fadeOpenMe">
+        <span v-if="!collapsedList" @click="collapseList()"><span>Collapse List</span></span>
+      </transition>
     </div>
+
     <div>
-      <span @click="reorderByAnalog()">Analog</span>
+      <span @click="reorderByAnalog()"><span v-if="orderedBy === 'original' || orderedBy === 'digital'">Offline →</span><span v-if="orderedBy === 'analog'">Reset →</span></span>
     </div>
   </div>
-  <div class="projectSingle" v-for="(project, index) in projectlistArray">
-    <div @mouseover="mouseOverTitle(index)" @mouseout="mouseOffTitle(index)" v-bind:class="{ isHovered: projectlistArray[index].itemHovered }" class="projectSingleInner">
-      <div @click="toggleCollapse(index)" class="projectSingleInnerTitle">
 
-        <transition name="fadeOpenMe">
-          <span v-if="projectlistArray[index].itemHovered && !projectlistArray[index].expanded" class="openMeTitle">Open Me!</span>
-        </transition>
-        <div v-bind:style="{'height':projectlistArray[index].initialHeight+10+'px'}" v-if="projectlistArray[index].position === 'fixed'" class="projectSingleInnerTitleBackground"></div>
-        <div v-bind:data-scale="projectlistArray[index].typeScale" v-bind:style="{'top':'5px', 'position': projectlistArray[index].position, 'margin-left':+projectlistArray[index].marginLeft-projectlistArray[index].width+'px'}" class="projectSingleInnerTitleWrapper">
+  <transition-group name="list">
+
+    <div v-bind:style="[projectlistArray[index].expanded ? projectlistArray[index].backgroundStyle : ''] " class="projectSingle list-item" v-for="(project, index) in projectlistArray" v-bind:key="projectlistArray[index]" >
+      <div @mouseover="mouseOverTitle(index)" @mouseout="mouseOffTitle(index)" v-bind:class="[{ isHovered: projectlistArray[index].itemHovered }]" class="projectSingleInner">
+        <div @click="toggleCollapse(index)" class="projectSingleInnerTitle">
 
 
-          <template v-if="projectlistArray[index].typeScale>7.5">
+          <transition name="fadeOpenMe">
+            <span v-if="projectlistArray[index].itemHovered && !projectlistArray[index].expanded" class="openMeTitle">Open Me!</span>
+          </transition>
+
+          <div v-bind:style="[{'height':projectlistArray[index].initialHeight+10+'px'},projectlistArray[index].backgroundStyle]" v-if="projectlistArray[index].position === 'fixed'" class="projectSingleInnerTitleBackground"></div>
+          <div v-bind:data-scale="projectlistArray[index].typeScale" v-bind:style="{'top':'5px', 'position': projectlistArray[index].position, 'margin-left':+projectlistArray[index].marginLeft-projectlistArray[index].width+'px'}" class="projectSingleInnerTitleWrapper">
+
+
+            <template v-if="projectlistArray[index].typeScale>7.5">
             <span class="projectTitle projectTitleRight" v-html="project.content.title.rendered"></span>
             <div class="projectControls projectControlsLeft">
-              <div v-bind:style="{'background':returnColor(index)}" v-if="projectlistArray[index].expanded" class="projectControlsClose projectControlsButton">
+              <div v-bind:style="" v-if="projectlistArray[index].expanded" class="projectControlsClose projectControlsButton">
               </div>
-              <div v-bind:style="{'background':returnColor(index)}" v-else class="projectControlsOpen projectControlsButton">
+              <div v-bind:style="" v-else class="projectControlsOpen projectControlsButton">
               </div>
             </div>
 </template>
           <template v-else>
 <div class="projectControls projectControlsRight">
-  <div v-bind:style="{'background':returnColor(index)}" v-if="projectlistArray[index].expanded" class="projectControlsClose projectControlsButton">
+  <div v-bind:style="" v-if="projectlistArray[index].expanded" class="projectControlsClose projectControlsButton">
   </div>
-  <div v-bind:style="{'background':returnColor(index)}" v-else class="projectControlsOpen projectControlsButton">
+  <div v-bind:style="" v-else class="projectControlsOpen projectControlsButton">
   </div>
 </div>
 <span class="projectTitle" v-html="project.content.title.rendered"></span>
@@ -56,6 +65,8 @@
 
     </div>
   </div>
+
+  </transition-group>
 </div>
 </template>
 
@@ -71,9 +82,13 @@ export default {
   data() {
     return {
       projectlistArray: [],
+      projectlistArrayOrg: [],
       activeItem: {},
       isActive: true,
-      orderedBy:''
+      orderedBy: 'original',
+      tempHeight: 'auto',
+      collapsedList: true,
+
       // itemHovered: false
     }
   },
@@ -102,7 +117,12 @@ export default {
           'marginTop': '0px',
           'initialHeight': 0,
           'marginLeft': '',
-          'itemHovered': false
+          'itemHovered': false,
+          'backgroundStyle': {
+            // active: true,
+            // 'text-danger': false
+            'background':'#ffe268'
+          }
           // 'marginLeft': ((Math.floor(Math.random() * 11)) * 1) * (window.innerWidth / 10),
         })
       });
@@ -133,26 +153,50 @@ export default {
 
   methods: {
 
+    collapseList: function() {
+
+      this.collapsedList = true
+
+      this.projectlistArray.forEach(function(expandedElement, index) {
+        expandedElement.expanded = false
+        expandedElement.itemHovered = false
+
+      })
+
+    },
+
+    setTempHeightProjectlist: function() {
+
+      this.tempHeight = this.$el.offsetHeight + "px"
+      console.log(this.$el.offsetHeight)
+      var vm = this
+      setTimeout(function() {
+        vm.tempHeight = 'auto'
+      }, 500)
+    },
+
     reorderByOriginal: function() {
       this.orderedBy = 'original'
-      this.projectlistArray = _.orderBy(this.projectlistArray, 'content.date','desc')
+      this.projectlistArray = _.orderBy(this.projectlistArray, 'content.date', 'desc')
     },
 
     reorderByAnalog: function() {
-      if(this.orderedBy === 'analog'){
+      this.setTempHeightProjectlist()
+      if (this.orderedBy === 'analog') {
         this.reorderByOriginal()
-      }else{
+      } else {
         this.orderedBy = 'analog'
-        this.projectlistArray = _.orderBy(this.projectlistArray, 'typeScale','desc')
+        this.projectlistArray = _.orderBy(this.projectlistArray, 'typeScale', 'desc')
       }
     },
 
     reorderByDigital: function() {
-      if(this.orderedBy === 'digital'){
+      this.setTempHeightProjectlist()
+      if (this.orderedBy === 'digital') {
         this.reorderByOriginal()
-      }else{
+      } else {
         this.orderedBy = 'digital'
-        this.projectlistArray = _.orderBy(this.projectlistArray, 'typeScale','asc')
+        this.projectlistArray = _.orderBy(this.projectlistArray, 'typeScale', 'asc')
       }
     },
 
@@ -177,7 +221,7 @@ export default {
       // if(!this.projectlistArray[index].itemHovered){
       // this.$set(this.projectlistArray[index], 'marginLeft', 5000 )
       // }
-      if(!this.projectlistArray[index].expanded){
+      if (!this.projectlistArray[index].expanded) {
 
         this.$set(this.projectlistArray[index], 'itemHovered', false)
       }
@@ -197,44 +241,51 @@ export default {
 
     scrollSpy: function() {
 
-      var expandedElements = _.filter(this.projectlistArray, {
-        'expanded': true
-      })
+
+      // var expandedElements = _.filter(this.projectlistArray, {
+      //   'expanded': true
+      // })
 
       var scrollTop = window.scrollY
 
       var vm = this
 
-      expandedElements.forEach(function(expandedElement, index) {
-        // console.log(expandedElement)
-        // console.log(expandedElement.initialIndex)
-
-        var initOffsetTopList = vm.$el.offsetTop
-        var initOffsetTopElement = vm.$el.querySelectorAll('.projectSingleInnerTitle')[expandedElement.initialIndex].offsetTop
-
-        var initHeightExpandedElement = vm.$el.querySelectorAll('.projectSingleInner')[expandedElement.initialIndex].clientHeight
-
-        var initHeightElementHeight = vm.$el.querySelectorAll('.projectSingleInnerTitle')[expandedElement.initialIndex].clientHeight
-
-        var initOffsetBottomElement = initOffsetTopList + initOffsetTopElement + initHeightExpandedElement - initHeightElementHeight
-
-        if (scrollTop > initOffsetTopList + initOffsetTopElement && scrollTop < initOffsetBottomElement - expandedElement.initialHeight) {
-
-          expandedElement.position = 'fixed'
-          // expandedElement.widthSet = '50%'
-          expandedElement.marginTop = expandedElement.initialHeight + 'px'
-          expandedElement.marginOffset = '20px'
-          // vm.$el.querySelectorAll('.projectSingleInnerTitle')[expandedElement.initialIndex].style.marginLeft = '-20px'
-        } else {
-
-          expandedElement.position = 'initial'
-          // vm.$el.querySelectorAll('.projectSingleInnerTitle')[expandedElement.initialIndex].style.marginLeft = '0px'
-          expandedElement.marginTop = '0px'
-          expandedElement.marginOffset = '0px'
+      this.projectlistArray.forEach(function(expandedElement, index) {
+        if (expandedElement.expanded) {
 
 
+          var initOffsetTopList = vm.$el.offsetTop
 
+
+          var initOffsetTopElement = vm.$el.querySelectorAll('.projectSingleInnerTitle')[index].offsetTop
+
+
+          var initHeightExpandedElement = vm.$el.querySelectorAll('.projectSingleInner')[index].clientHeight
+
+          var initHeightElementHeight = vm.$el.querySelectorAll('.projectSingleInnerTitle')[index].clientHeight
+
+          var initOffsetBottomElement = initOffsetTopList + initOffsetTopElement + initHeightExpandedElement - initHeightElementHeight
+
+          if (scrollTop > initOffsetTopList + initOffsetTopElement && scrollTop < initOffsetBottomElement - expandedElement.initialHeight) {
+
+            expandedElement.position = 'fixed'
+            // expandedElement.widthSet = '50%'
+            expandedElement.marginTop = expandedElement.initialHeight + 'px'
+            expandedElement.marginOffset = '20px'
+            // vm.$el.querySelectorAll('.projectSingleInnerTitle')[expandedElement.initialIndex].style.marginLeft = '-20px'
+          } else {
+
+            expandedElement.position = 'initial'
+            // vm.$el.querySelectorAll('.projectSingleInnerTitle')[expandedElement.initialIndex].style.marginLeft = '0px'
+            expandedElement.marginTop = '0px'
+            expandedElement.marginOffset = '0px'
+
+
+
+          }
         }
+
+
       })
 
     },
@@ -279,7 +330,7 @@ export default {
           vm.$set(vm.projectlistArray[index], 'marginLeft', vm.projectlistArray[index].typeScale * (windowWidth / 10))
         }
 
-        var diff = windowWidth - (elementWidthTotal + vm.projectlistArray[index].marginLeft + vm.getScrollBarWidth() - 15)
+        var diff = windowWidth - (elementWidthTotal + vm.projectlistArray[index].marginLeft + vm.getScrollBarWidth() - 14)
 
         if (diff < 0) {
           vm.$set(vm.projectlistArray[index], 'width', Math.abs(diff))
@@ -372,6 +423,9 @@ export default {
       // this.$SmoothScroll(0,500,callback,context);
     },
     toggleCollapse: function(index) {
+
+      this.collapsedList = false
+
       this.projectlistArray[index].expanded = !this.projectlistArray[index].expanded
 
 
@@ -408,10 +462,16 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="scss" scoped>@import "../assets/scss/base.scss";
 
+$transition-timing-a: 0.5s;
+$transition-timing-b: 0.75s;
+
+.list-move {
+    transition: transform $transition-timing-a/3;
+}
 .fade-enter-active,
 .fade-leave-active {
     // transition: opacity .5s, max-height .5s
-    transition: opacity 0.5s, max-height 0.8s;
+    transition: opacity $transition-timing-a, max-height $transition-timing-b;
 }
 /* .fade-leave-active in <2.1.8 */
 .fade-enter,
@@ -425,28 +485,28 @@ export default {
     max-height: 5000px;
 }
 
-
 .fadeOpenMe-enter-active,
 .fadeOpenMe-leave-active {
     // transition: opacity .5s, max-height .5s
-    transition: opacity 0.5s;
-    -webkit-transition-delay: 0.5s; /* Safari */
-    transition-delay: 0.5s;
+    transition: opacity $transition-timing-a;
+    -webkit-transition-delay: $transition-timing-b;
+    /* Safari */
+    transition-delay: $transition-timing-b;
 }
 /* .fade-leave-active in <2.1.8 */
 .fadeOpenMe-enter,
 .fadeOpenMe-leave,
 .fadeOpenMe-leave-to {
     opacity: 0;
-    -webkit-transition-delay: 0.5s; /* Safari */
-    transition-delay: 0.5s;
+    -webkit-transition-delay: $transition-timing-a;
+    /* Safari */
+    transition-delay: $transition-timing-a;
 }
 // /* .fade-leave-active in <2.1.8 */
 // .fadeOpenMe-enter-to,
 // .fadeOpenMe-leave {
 //     max-height: 5000px;
 // }
-
 @include media("<tablet") {
     * {
         // display: none;
@@ -454,8 +514,10 @@ export default {
 }
 
 #projectlist {
+    overflow: hidden;
     background: rgb(245, 245, 245);
-    position: relative;
+    // position: relative;
+    // height: 100%;
     // display: grid;
 
     #projectlistHeader {
@@ -466,11 +528,17 @@ export default {
         border-bottom: 3px solid black;
         padding: 20px;
         div {
-            width: 33.333%;
+            width: 33.33333%;
             float: left;
             display: flex;
             justify-content: center;
             align-content: center;
+            span {
+                position: relative;
+                top: 1px;
+                line-height: 40px;
+                cursor: pointer;
+            }
             &:first-of-type {
                 justify-content: flex-start;
 
@@ -484,6 +552,8 @@ export default {
 
     .projectSingle {
 
+        background: rgb(245, 245, 245);
+
         width: 100%;
         border-bottom: 3px solid black;
         &:first-of-type {
@@ -493,15 +563,15 @@ export default {
         .projectSingleInner {
 
             &.isHovered {
-                .projectSingleInnerTitleWrapper{
-                  margin-left: 0 !important;
+                .projectSingleInnerTitleWrapper {
+                    margin-left: 0 !important;
 
                 }
                 .projectTitleRight {
                     text-align: left !important;
                 }
-                .projectTitle{
-                  max-width: 2000px !important;
+                .projectTitle {
+                    max-width: 2000px !important;
 
                 }
             };
@@ -516,18 +586,17 @@ export default {
             // display: inline-block;
 
             .projectSingleInnerTitle {
-              cursor: pointer;
-              position: relative;
+                cursor: pointer;
+                position: relative;
 
-                .openMeTitle{
-                  position: absolute;
-                  pointer-events: none;
-                  right: 0;
-                  top: 16px;
-
-                  @include media("<desktop") {
-                    display: none;
-                  }
+                .openMeTitle {
+                    position: absolute;
+                    pointer-events: none;
+                    right: 0;
+                    top: 6px;
+                    @include media("<desktop") {
+                        display: none;
+                    }
 
                 }
 
@@ -539,10 +608,11 @@ export default {
                     white-space: nowrap;
                     overflow: hidden;
 
-                    -webkit-transition: max-width 0.75s;
-                    transition: max-width 0.75s;
-                    -webkit-transition-delay: 0.5s; /* Safari */
-                    transition-delay: 0.5s;
+                    -webkit-transition: max-width $transition-timing-b;
+                    transition: max-width $transition-timing-b;
+                    -webkit-transition-delay: $transition-timing-a;
+                    /* Safari */
+                    transition-delay: $transition-timing-a;
 
                 }
                 .projectTitleRight {
@@ -568,28 +638,31 @@ export default {
                     .projectControlsButton {
                         width: 50px;
                         height: 50px;
-                        -webkit-mask-size: cover;
-                        mask-size: cover;
+                        // -webkit-mask-size: cover;
+                        // mask-size: cover;
                         background-size: cover;
-                        background-color: black;
+                        // background-color: black;
                         background-position: center;
                     }
 
                     .projectControlsClose {
-
-                        -webkit-mask: url("../assets/svg/cross.svg") no-repeat 50% 50%;
-                        mask: url("../assets/svg/cross.svg") no-repeat 50% 50%;
-                        -webkit-mask-size: cover;
-                        mask-size: cover;
+                        background-image: url("../assets/svg/cross.svg");
+                        //
+                        // -webkit-mask: url("../assets/svg/cross.svg") no-repeat 50% 50%;
+                        // mask: url("../assets/svg/cross.svg") no-repeat 50% 50%;
+                        // -webkit-mask-size: cover;
+                        // mask-size: cover;
                         background-size: cover;
 
                     }
 
                     .projectControlsOpen {
-                        -webkit-mask: url("../assets/svg/circle.svg") no-repeat 50% 50%;
-                        mask: url("../assets/svg/circle.svg") no-repeat 50% 50%;
-                        -webkit-mask-size: cover;
-                        mask-size: cover;
+                        background-image: url("../assets/svg/circle.svg");
+
+                        // -webkit-mask: url("../assets/svg/circle.svg") no-repeat 50% 50%;
+                        // mask: url("../assets/svg/circle.svg") no-repeat 50% 50%;
+                        // -webkit-mask-size: cover;
+                        // mask-size: cover;
                         background-size: cover;
 
                     }
@@ -608,21 +681,22 @@ export default {
                 .projectSingleInnerTitleWrapper {
                     // display: inline-block;
                     pointer-events: none;
-                    display: inline-flex;
+                    // display: inline-flex;
                     width: initial;
                     // display: flex;
                     white-space: nowrap;
                     overflow: hidden;
                     padding-bottom: 12px;
-                    -webkit-transition: margin-left 0.5s;
-                    transition: margin-left 0.5s;
-                    -webkit-transition-delay: 0.3s; /* Safari */
-                    transition-delay: 0.3s;
+                    -webkit-transition: margin-left $transition-timing-a;
+                    transition: margin-left $transition-timing-a;
+                    -webkit-transition-delay: $transition-timing-b;
+                    /* Safari */
+                    transition-delay: $transition-timing-b;
                     span {
                         &:first-of-type {
                             // margin-right: 14px;
                         }
-                        top: 16px;
+                        top: 6px;
                         margin: 0;
                         position: relative;
 

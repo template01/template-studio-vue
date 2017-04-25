@@ -1,8 +1,10 @@
 <template>
-<div class="projectitem">
-  <div v-html="projectContent.acf['item_year']"></div>
-  <div v-html="projectContent.acf['item_text']"></div>
+<div class="projectitem addMarginX1TopBottom">
+  <div>
+  <!-- <div class="addMarginX2Sides"  v-html="projectContent.acf['item_year']"></div> -->
+  <div class="addMarginX1Sides addMarginX1Bottom" v-html="projectContent.acf['item_text']"></div>
   <img width="100%" v-bind:src="projectContent.acf['customfeaturedimage'].url" />
+</div>
 </div>
 </template>
 
@@ -19,9 +21,19 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="scss" scoped>@import "../assets/scss/base.scss";
+
+
 @include media("<tablet") {
     * {
         // display: none;
     }
 }
+</style>
+<style lang="scss" >@import "../assets/scss/base.scss";
+@include media("<tablet") {
+    * {
+        // display: none;
+    }
+}
+
 </style>

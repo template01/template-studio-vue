@@ -24,5 +24,14 @@ export default {
 body,html{
   margin: 0;
   overflow-x: hidden;
+  /*overflow-y: scroll;*/
+},
+html{
+  overflow-y: scroll;
+
+}
+body{
+  /*overflow-y: scroll;*/
+  /*height: 100%;*/
 }
 </style>
