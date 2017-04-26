@@ -24,6 +24,7 @@ export default {
 body,html{
   margin: 0;
   overflow-x: hidden;
+  position:relative;
   /*overflow-y: scroll;*/
 },
 html{
@@ -31,6 +32,7 @@ html{
 
 }
 body{
+  overflow: hidden;
   /*overflow-y: scroll;*/
   /*height: 100%;*/
 }

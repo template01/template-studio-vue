@@ -1,11 +1,23 @@
 
 @import "../../node_modules/include-media/dist/_include-media.scss";
 
-$breakpoints: (phone: 640px, tablet: 768px, desktop: 1025px);
+$breakpoints: (phone: 640px, tablet: 800px, desktop: 1025px);
 
 $defaultPadding: 20px;
 
 $marginx1Desktop: 70px;
+
+$transition-timing-a: 0.5s;
+$transition-timing-b: 0.75s;
+
+
+.smallText{
+  font-size: 20px;
+  @include media("<tablet") {
+    font-size: 20px;
+  }
+}
+
 
 .addMarginX1{
   margin: $marginx1Desktop;

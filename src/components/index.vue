@@ -1,8 +1,8 @@
 <template>
 <div id="index" class="">
-  <!-- <splash></splash> -->
-  <projectlist></projectlist>
   <splash></splash>
+  <projectlist></projectlist>
+  <!-- <splash></splash> -->
 
 </div>
 </template>
@@ -13,13 +13,16 @@ import splash from './splash'
 export default {
   components:{
     projectlist,
-    splash
+    splash,
   },
   data() {
     return {
       msg: 'Welcome to Your Vue.js App'
     }
-  }
+  },
+
+
+
 }
 </script>
 

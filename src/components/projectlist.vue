@@ -19,7 +19,7 @@
 
   <transition-group name="list">
 
-    <div v-bind:style="[projectlistArray[index].expanded ? projectlistArray[index].backgroundStyle : ''] " class="projectSingle list-item" v-for="(project, index) in projectlistArray" v-bind:key="projectlistArray[index]" >
+    <div v-bind:style="[projectlistArray[index].expanded ? projectlistArray[index].backgroundStyle : ''] " class="projectSingle list-item" v-for="(project, index) in projectlistArray" v-bind:key="projectlistArray[index]">
       <div @mouseover="mouseOverTitle(index)" @mouseout="mouseOffTitle(index)" v-bind:class="[{ isHovered: projectlistArray[index].itemHovered }]" class="projectSingleInner">
         <div @click="toggleCollapse(index)" class="projectSingleInnerTitle">
 
@@ -121,7 +121,7 @@ export default {
           'backgroundStyle': {
             // active: true,
             // 'text-danger': false
-            'background':'#ffe268'
+            'background': '#ffe268'
           }
           // 'marginLeft': ((Math.floor(Math.random() * 11)) * 1) * (window.innerWidth / 10),
         })
@@ -462,9 +462,6 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="scss" scoped>@import "../assets/scss/base.scss";
 
-$transition-timing-a: 0.5s;
-$transition-timing-b: 0.75s;
-
 .list-move {
     transition: transform $transition-timing-a/3;
 }
@@ -514,6 +511,7 @@ $transition-timing-b: 0.75s;
 }
 
 #projectlist {
+    clear: both;
     overflow: hidden;
     background: rgb(245, 245, 245);
     // position: relative;
@@ -563,6 +561,10 @@ $transition-timing-b: 0.75s;
         .projectSingleInner {
 
             &.isHovered {
+
+                .projectSingleInnerTitle {
+                  z-index: 99999999999999;
+                }
                 .projectSingleInnerTitleWrapper {
                     margin-left: 0 !important;
 
