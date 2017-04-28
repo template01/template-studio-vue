@@ -1,9 +1,11 @@
+hash: 'studio', query: { plan: 'private' }
+
 
 <template>
 <div id="splashAreaWrapper">
   <div v-bind:style="{'height':setContainerHeight}" v-bind:class="{collapsedSplash:sidebar}" id="splashArea" class="">
 
-    <div id="splashAreaInner">
+    <div id="splashAreaInner" v-bind:style="{'min-height':initWindowHeight}">
       <div id="topBar">
         <div id="template">
           <span>
@@ -19,7 +21,11 @@
         </div>
       </div>
 
-        <splashcontent v-bind:contentSplash="contentAll"></splashcontent>
+
+      <splashcontent v-bind:contentSplash="contentAll"></splashcontent>
+
+      <!-- <router-link :to="{ path: '/studio', hash: 'camera'}">User</router-link> -->
+      <router-link :to="{ path: '/studio', query: {part:'camera'}}">Camera</router-link>
 
 
 
@@ -29,7 +35,7 @@
 
   </div>
 
-  <sidebar v-on:emitSidebarHeight="function(value){ sidebarHeight = value+'px'; setAndCheckContainers()}" v-bind:setSidebarHeight="setSidebarHeight" v-on:emitToggleSideBar="toggleSidebar()" v-bind:showSidebar="sidebar" v-bind:contentSidebar="contentAll"></sidebar>
+  <sidebar v-on:emitSidebarHeight="function(value){setAndCheckContainers(value)}" v-bind:setSidebarHeight="setSidebarHeight" v-on:emitToggleSideBar="toggleSidebar()" v-bind:showSidebar="sidebar" v-bind:contentSidebar="contentAll"></sidebar>
 </div>
 </template>
 
@@ -39,7 +45,8 @@ import splashcontent from './splashcontent'
 
 export default {
   components: {
-    sidebar, splashcontent
+    sidebar,
+    splashcontent
   },
 
   name: '',
@@ -51,50 +58,66 @@ export default {
       containerHeight: '0px',
       setContainerHeight: 'auto',
       setSidebarHeight: 'auto',
-      contentAll:''
+      contentAll: '',
+      initWindowHeight: '1000px',
 
 
     }
   },
   methods: {
     toggleSidebar: function() {
-      if (this.$route.hash === '#studio') {
+      if (this.$route.path === '/studio') {
         this.$router.push({
-          hash: ''
+          path: '/'
         })
+        window.scroll(0,0);
+
+
       } else {
         this.$router.push({
-          hash: 'studio'
+          path: 'studio'
         })
       }
     },
 
-    setAndCheckContainers: function() {
+    setAndCheckContainers: function(inputSidebarHeight) {
 
-      if (this.containerHeight < parseFloat(this.sidebarHeight)) {
-        this.setContainerHeight = this.sidebarHeight
+
+      console.log('sidebar height: ' + inputSidebarHeight)
+      console.log('splashinner height: ' + this.$el.querySelector('#splashAreaInner').scrollHeight)
+
+      if (this.$route.path === "/studio") {
+
+        console.log('studio')
+
+        if (this.$el.querySelector('#splashAreaInner').scrollHeight < inputSidebarHeight) {
+          this.setContainerHeight = inputSidebarHeight + 'px'
+          this.setSidebarHeight = inputSidebarHeight + 'px'
+
+          console.log('small splash')
+
+        } else {
+          console.log('big splash')
+          this.setContainerHeight = 'auto'
+
+          this.setSidebarHeight = this.$el.querySelector('#splashAreaInner').scrollHeight + 'px'
+        }
+
       } else {
-        this.containerHeight = this.$el.querySelector('#splashArea').scrollHeight
-        this.setSidebarHeight = this.containerHeight + 'px'
-      }
 
+        this.setContainerHeight = 'auto'
+
+        console.log('not studio')
+
+      }
     }
   },
 
   created: function() {
     this.$http.get('http://api.template-studio.nl/wp-json/wp/v2/pages').then(function(response) {
       this.contentAll = response.body[0]
-    }).then(function() {
-      this.containerHeight = this.$el.querySelector('#splashArea').scrollHeight
-      var vm = this
-
-      setTimeout(function() {
-        vm.containerHeight = vm.$el.querySelector('#splashArea').scrollHeight
-        console.log(vm.$el.querySelector('#splashArea').scrollHeight)
-        console.log(vm.sidebarHeight)
-      }, 100)
-
-    })
+      this.initWindowHeight = window.innerHeight+"px"
+    }).then(function() {})
   },
 
 
@@ -102,30 +125,25 @@ export default {
   mounted() {
 
 
-    if (this.$route.hash === '#studio') {
+    if (this.$route.path === '/studio') {
       this.sidebar = true
 
     }
 
     var vm = this
-    window.addEventListener('resize', _.debounce(function() {
-      if (vm.$route.hash === '#studio') {
-        vm.setAndCheckContainers()
-      }
-    }, 500));
 
 
   },
   watch: {
     '$route' (to, from) {
-      if (to.hash === '#studio') {
+      console.log(to)
+      if (to.path === '/studio') {
         this.sidebar = true
-        // this.setAndCheckContainers()
       }
-      if (from.hash === '#studio') {
+      if (to.path === '/') {
         this.sidebar = false
-        this.setContainerHeight = 'auto'
       }
+
     }
   }
 
@@ -141,7 +159,6 @@ export default {
 }
 
 #splashAreaWrapper {
-    min-height: 100vh;
     background: rgb(242, 242, 242);
 
     display: flex;
@@ -156,11 +173,15 @@ export default {
 
     #template {
         float: left;
+        position: relative;
+        top:3px;
     }
 
     #toggleSidebar {
         float: right;
         text-align: right;
+        position: relative;
+        top:3px;
     }
     // position: relative;
     &.collapsedSplash {
@@ -176,11 +197,7 @@ export default {
     -webkit-transition: margin-left $transition-timing-a;
     #splashAreaInner {
         padding: $defaultPadding;
-        // min-height: 100vh;
-        min-height: 100vh;
-
-        // background: rgb(242, 242, 242) ;
-
+        min-height: 1000px;
         width: 100%;
         top: 0;
         // display: flex;

@@ -6,7 +6,7 @@
     <swiper v-if="projectContent.acf['item_media']" :options="swiperOption" ref="mySwiper">
       <!-- slides -->
       <!-- {{projectContent.acf['item_media']}} -->
-      <swiper-slide v-bind:style="{'height':initialSwiperHeight}" class="maxWidthAdjustedToMarginX1" v-for="image in projectContent.acf['item_media']">
+      <swiper-slide v-bind:style="{'height':initialSwiperHeight}" class="maxWidthAdjustedToMarginX1" v-for="image in projectContent.acf['item_media']" :key="image">
         <!-- <img width="100%" v-bind:src="projectContent.acf['customfeaturedimage'].url" /> -->
         <img width="100%" v-bind:data-src="image.image.url" class="swiper-lazy" />
         <div class="swiper-lazy-preloader">WAIT</div>

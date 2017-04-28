@@ -7,6 +7,8 @@ import router from './router'
 import VueAwesomeSwiper from 'vue-awesome-swiper'
 Vue.use(VueAwesomeSwiper)
 
+require('smoothscroll-polyfill').polyfill();
+
 
 Vue.config.productionTip = false
 

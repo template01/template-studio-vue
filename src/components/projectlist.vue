@@ -264,9 +264,9 @@ export default {
 
           var initHeightElementHeight = vm.$el.querySelectorAll('.projectSingleInnerTitle')[index].clientHeight
 
-          var initOffsetBottomElement = initOffsetTopList + initOffsetTopElement + initHeightExpandedElement - initHeightElementHeight
+          var initOffsetBottomElement = initOffsetTopElement + initHeightExpandedElement - initHeightElementHeight
 
-          if (scrollTop > initOffsetTopList + initOffsetTopElement && scrollTop < initOffsetBottomElement - expandedElement.initialHeight) {
+          if (scrollTop > initOffsetTopElement && scrollTop < initOffsetBottomElement - expandedElement.initialHeight) {
 
             expandedElement.position = 'fixed'
             // expandedElement.widthSet = '50%'
@@ -417,7 +417,8 @@ export default {
       // var elementsOffsetTop = offset(this.$el.querySelectorAll('.projectSingle')[index]).top
       var vm = this
       setTimeout(function() {
-        vm.$SmoothScroll(vm.$el.querySelectorAll('.projectSingle')[index], 800);
+        vm.$el.querySelectorAll('.projectSingle')[index].scrollIntoView({ behavior: 'smooth' });
+
       }, 200)
       // this.$SmoothScroll(this.offset(this.$el.querySelectorAll('.projectSingle')[index]).top, 500);
       // this.$SmoothScroll(0,500,callback,context);
