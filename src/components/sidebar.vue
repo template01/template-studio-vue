@@ -1,6 +1,7 @@
 <template>
 <div v-bind:style="{'height':setSidebarHeight}" v-bind:class="{collapsedSidebar:!showSidebar}" id="sidebar">
   <div id="sidebarInnerWrapper">
+
     <div id="sidebarToggle">
       <div @click="emitToggleSideBar()" class="closeButton"> </div>
     </div>
@@ -21,6 +22,8 @@
 
       <span id="camera">camera</span>
 
+    </div>
+    <div id="sidebarBackground">
     </div>
   </div>
 </div>
@@ -198,6 +201,23 @@ export default {
 
 #sidebar {
 
+
+    #sidebarBackground{
+      // background: red;
+      background: green;
+      position: fixed;
+      width: calc(100% - 173px);
+      height: 90px;
+      margin-top: -$defaultPadding;
+      margin-left: -$defaultPadding;
+      @include media("<tablet") {
+        width: 100%;
+
+      }
+
+
+    }
+
     .sidebarElement {
 
         padding-top: $marginx1Desktop;
@@ -213,11 +233,13 @@ export default {
 
     #sidebarNav {
         position: fixed;
+        z-index: 9999;
 
     }
 
     #sidebarToggle {
         position: fixed;
+        z-index: 9999;
         float: left;
         .closeButton {
             width: 50px;

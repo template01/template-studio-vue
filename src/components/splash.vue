@@ -1,4 +1,5 @@
-hash: 'studio', query: { plan: 'private' }
+
+  hash: 'studio', query: { plan: 'private' }
 
 
 <template>
@@ -14,10 +15,15 @@ hash: 'studio', query: { plan: 'private' }
         </div>
 
 
-        <div id="toggleSidebar">
-          <span @click="toggleSidebar()">
-              STUDIO
-            </span>
+        <div id="toggleSidebar" @click="toggleSidebar()" @mouseover="mouseOverStudio()" @mouseout="mouseOffStudio()" v-bind:class="[{ isHovered: mouseOverStudioShow }]">
+          <span id="studio">
+            STUDIO
+          </span>
+          <div id="toggleSidebarWrapper">
+            <div class="openButton">
+
+            </div>
+          </div>
         </div>
       </div>
 
@@ -60,23 +66,50 @@ export default {
       setSidebarHeight: 'auto',
       contentAll: '',
       initWindowHeight: '1000px',
-
+      mouseOverStudioShow: false
 
     }
   },
   methods: {
+
+
+    mouseOverStudio: function() {
+      if (!this.sidebar) {
+        this.mouseOverStudioShow = true
+      }
+    },
+    mouseOffStudio: function() {
+      this.mouseOverStudioShow = false
+
+    },
     toggleSidebar: function() {
       if (this.$route.path === '/studio') {
-        this.$router.push({
-          path: '/'
-        })
-        window.scroll(0,0);
+        if (window.scrollY > window.outerHeight / 2) {
+          window.scroll({
+            top: 0,
+            left: 0,
+            behavior: 'smooth'
+          })
+          var vm = this
+          setTimeout(function() {
+            vm.$router.push({
+              path: '/'
+            })
+          }, 500)
+        } else {
+          window.scroll(0, 0);
+          this.$router.push({
+            path: '/'
+          })
+        }
 
 
       } else {
         this.$router.push({
           path: 'studio'
         })
+        this.mouseOverStudioShow = false
+
       }
     },
 
@@ -116,8 +149,11 @@ export default {
   created: function() {
     this.$http.get('http://api.template-studio.nl/wp-json/wp/v2/pages').then(function(response) {
       this.contentAll = response.body[0]
-      this.initWindowHeight = window.innerHeight+"px"
-    }).then(function() {})
+      this.initWindowHeight = window.innerHeight + "px"
+    }).then(function() {
+      this.hoverIntent()
+
+    })
   },
 
 
@@ -174,14 +210,56 @@ export default {
     #template {
         float: left;
         position: relative;
-        top:3px;
+        top: 3px;
     }
 
     #toggleSidebar {
+
+        #studio {
+            padding-right: $defaultPadding;
+            margin-right: -$defaultPadding;
+
+            padding-top: $defaultPadding;
+            margin-top: -$defaultPadding;
+
+            padding-bottom: $defaultPadding;
+        }
+        &.isHovered {
+            margin-right: $defaultPadding * 2 + 30;
+        }
+
+        transition: margin-right $transition-timing-a/2;
+        -webkit-transition: margin-right $transition-timing-a/2;
+
         float: right;
         text-align: right;
         position: relative;
-        top:3px;
+        top: 3px;
+
+        cursor: pointer;
+
+        #toggleSidebarWrapper {
+            width: $defaultPadding * 2 + 30;
+            // margin-left: $defaultPadding*2;
+            background: green;
+            color: rgb(242, 242, 242);
+            position: absolute;
+            right: - $defaultPadding * 2 - 30 - $defaultPadding;
+            height: 100vh;
+            top: -$defaultPadding - 3px;
+            padding-top: $defaultPadding;
+            padding-left: $defaultPadding/2;
+            padding-right: $defaultPadding/2;
+            .openButton {
+                width: 50px;
+                height: 50px;
+                cursor: pointer;
+                background-size: cover;
+                background-position: center;
+                background-image: url("../assets/svg/sidew.svg");
+                background-size: cover;
+            }
+        }
     }
     // position: relative;
     &.collapsedSplash {
