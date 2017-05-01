@@ -1,12 +1,23 @@
-
-  hash: 'studio', query: { plan: 'private' }
-
-
 <template>
-<div id="splashAreaWrapper">
+<div v-bind:style="[{position: sidebar ? 'relative' :checkdeviceposition() ,'min-height':windowheight}]" id="splashAreaWrapper">
+
+
+
+
   <div v-bind:style="{'height':setContainerHeight}" v-bind:class="{collapsedSplash:sidebar}" id="splashArea" class="">
 
-    <div id="splashAreaInner" v-bind:style="{'min-height':initWindowHeight}">
+    <div id="splashAreaInner" v-bind:style="{'min-height':windowheight}">
+
+
+
+        <div id="bottomBar">
+          <div id="">
+                  <span>
+                      Projects
+                    </span>
+                </div>
+        </div>
+
       <div id="topBar">
         <div id="template">
           <span>
@@ -14,15 +25,14 @@
             </span>
         </div>
 
+      </div>
 
-        <div id="toggleSidebar" @click="toggleSidebar()" @mouseover="mouseOverStudio()" @mouseout="mouseOffStudio()" v-bind:class="[{ isHovered: mouseOverStudioShow }]">
-          <span id="studio">
-            STUDIO
-          </span>
-          <div id="toggleSidebarWrapper">
-            <div class="openButton">
-
-            </div>
+      <div id="toggleSidebar" @click="toggleSidebar()" @mouseover="mouseOverStudio()" @mouseout="mouseOffStudio()" v-bind:class="[{ isHovered: mouseOverStudioShow }]">
+        <span id="studio">
+          STUDIO
+        </span>
+        <div id="toggleSidebarWrapper">
+          <div class="openButton">
           </div>
         </div>
       </div>
@@ -30,8 +40,9 @@
 
       <splashcontent v-bind:contentSplash="contentAll"></splashcontent>
 
-      <!-- <router-link :to="{ path: '/studio', hash: 'camera'}">User</router-link> -->
-      <router-link :to="{ path: '/studio', query: {part:'camera'}}">Camera</router-link>
+
+
+      <!-- <router-link :to="{ path: '/studio', query: {part:'camera'}}">Camera</router-link> -->
 
 
 
@@ -42,6 +53,7 @@
   </div>
 
   <sidebar v-on:emitSidebarHeight="function(value){setAndCheckContainers(value)}" v-bind:setSidebarHeight="setSidebarHeight" v-on:emitToggleSideBar="toggleSidebar()" v-bind:showSidebar="sidebar" v-bind:contentSidebar="contentAll"></sidebar>
+
 </div>
 </template>
 
@@ -54,7 +66,7 @@ export default {
     sidebar,
     splashcontent
   },
-
+  props:['windowheight','mobile'],
   name: '',
   data() {
     return {
@@ -65,12 +77,22 @@ export default {
       setContainerHeight: 'auto',
       setSidebarHeight: 'auto',
       contentAll: '',
-      initWindowHeight: '1000px',
-      mouseOverStudioShow: false
+      mouseOverStudioShow: false,
+
 
     }
   },
   methods: {
+
+    checkdeviceposition: function(){
+      if(this.mobile){
+        return 'relative'
+
+      }else{
+        return 'fixed'
+
+      }
+    },
 
 
     mouseOverStudio: function() {
@@ -105,10 +127,31 @@ export default {
 
 
       } else {
-        this.$router.push({
-          path: 'studio'
-        })
-        this.mouseOverStudioShow = false
+
+        if (window.scrollY > window.outerHeight / 2) {
+          window.scroll({
+            top: 0,
+            left: 0,
+            behavior: 'smooth'
+          })
+          var vm = this
+          setTimeout(function() {
+            vm.mouseOverStudioShow = false
+
+            vm.$router.push({
+              path: 'studio'
+            })
+          }, 500)
+        } else {
+          window.scroll(0, 0);
+          this.mouseOverStudioShow = false
+
+          this.$router.push({
+            path: 'studio'
+          })
+        }
+
+
 
       }
     },
@@ -149,9 +192,7 @@ export default {
   created: function() {
     this.$http.get('http://api.template-studio.nl/wp-json/wp/v2/pages').then(function(response) {
       this.contentAll = response.body[0]
-      this.initWindowHeight = window.innerHeight + "px"
     }).then(function() {
-      this.hoverIntent()
 
     })
   },
@@ -199,6 +240,10 @@ export default {
 
     display: flex;
 
+    // position: fixed;
+    width: 100%;
+    top: 0;
+
 }
 
 #splashArea {
@@ -206,11 +251,22 @@ export default {
     // max-height: 1158px;
     overflow: hidden;
     float: left;
+    position: relative;
 
-    #template {
+    #bottomBar{
+      position: absolute;
+          // bottom: calc(50% + -30px);
+          bottom: $defaultPadding;
+
+    }
+    #topBar{
+
+      #template {
         float: left;
         position: relative;
         top: 3px;
+      }
+
     }
 
     #toggleSidebar {

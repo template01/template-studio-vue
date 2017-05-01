@@ -1,8 +1,11 @@
 <template>
-<div class="addMarginX1" id="splashContent">
-  <div v-if="contentSplash.acf" v-html="contentSplash.acf.indexoneliner">
-  </div>
+<div class="" id="splashExtra">
+  <div  class="addPaddingX1" id="splashExtraInner">
+    <p>
+      Extra content?
+    </p>
 
+  </div>
 </div>
 </template>
 
@@ -35,11 +38,19 @@ export default {
 
 }
 
-#splashContent{
+#splashExtra{
+  margin-bottom: 90px;
+  position: relative;
+  display: block;
+  background: rgb(242,242,242);
+
   clear: both;
-  padding-top: $defaultPadding;
+  #splashExtraInner{
+    background: rgb(242,242,242);
+
+  }
   p{
-    margin-top: 0;
+    margin: 0;
   }
 }
 </style>

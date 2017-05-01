@@ -1,6 +1,6 @@
 
 <template>
-<div id="projectlist" v-bind:style="{'height':tempHeight}" class="">
+<div id="projectlist" v-bind:style="{'height':tempHeight, 'margin-top':marginTop}"  class="">
 
   <div id="projectlistHeader">
     <div>
@@ -20,7 +20,7 @@
   <transition-group name="list">
 
     <div v-bind:style="[projectlistArray[index].expanded ? projectlistArray[index].backgroundStyle : ''] " class="projectSingle list-item" v-for="(project, index) in projectlistArray" v-bind:key="projectlistArray[index]">
-      <div @mouseover="mouseOverTitle(index)" @mouseout="mouseOffTitle(index)" v-bind:class="[{ isHovered: projectlistArray[index].itemHovered }]" class="projectSingleInner">
+      <div @mouseover="mouseOverTitle(index)" @mouseout="mouseOffTitle(index)" v-bind:class="[{ isHovered: projectlistArray[index].itemHovered, isExpanded: projectlistArray[index].expanded }]" class="projectSingleInner">
         <div @click="toggleCollapse(index)" class="projectSingleInnerTitle">
 
 
@@ -28,12 +28,14 @@
             <span v-if="projectlistArray[index].itemHovered && !projectlistArray[index].expanded" class="openMeTitle">Open Me!</span>
           </transition>
 
-          <div v-bind:style="[{'height':projectlistArray[index].initialHeight+10+'px'},projectlistArray[index].backgroundStyle]" v-if="projectlistArray[index].position === 'fixed'" class="projectSingleInnerTitleBackground"></div>
+          <div v-bind:style="[{'height':projectlistArray[index].madeHeigth+10+'px'},projectlistArray[index].backgroundStyle]" v-if="projectlistArray[index].position === 'fixed'" class="projectSingleInnerTitleBackground"></div>
           <div v-bind:data-scale="projectlistArray[index].typeScale" v-bind:style="{'top':'5px', 'position': projectlistArray[index].position, 'margin-left':+projectlistArray[index].marginLeft-projectlistArray[index].width+'px'}" class="projectSingleInnerTitleWrapper">
 
 
             <template v-if="projectlistArray[index].typeScale>7.5">
-            <span class="projectTitle projectTitleRight" v-html="project.content.title.rendered"></span>
+              <div class="projectTitle" >
+                <span class="projectTitleActual" v-html="project.content.title.rendered"></span><br />
+              </div>
             <div class="projectControls projectControlsLeft">
               <div v-bind:style="" v-if="projectlistArray[index].expanded" class="projectControlsClose projectControlsButton">
               </div>
@@ -48,7 +50,10 @@
   <div v-bind:style="" v-else class="projectControlsOpen projectControlsButton">
   </div>
 </div>
-<span class="projectTitle" v-html="project.content.title.rendered"></span>
+<div class="projectTitle">
+  <span class="projectTitleActual" v-html="project.content.title.rendered"></span><br />
+
+</div>
 </template>
         </div>
 
@@ -79,6 +84,7 @@ export default {
   components: {
     projectitem
   },
+  props:['windowheight','marginTop'],
   data() {
     return {
       projectlistArray: [],
@@ -116,6 +122,8 @@ export default {
           'initialIndex': index,
           'marginTop': '0px',
           'initialHeight': 0,
+          'madeHeigth': 0,
+
           'marginLeft': '',
           'itemHovered': false,
           'backgroundStyle': {
@@ -266,11 +274,11 @@ export default {
 
           var initOffsetBottomElement = initOffsetTopElement + initHeightExpandedElement - initHeightElementHeight
 
-          if (scrollTop > initOffsetTopElement && scrollTop < initOffsetBottomElement - expandedElement.initialHeight) {
+          if (scrollTop > initOffsetTopElement && scrollTop < initOffsetBottomElement - expandedElement.madeHeigth) {
 
             expandedElement.position = 'fixed'
             // expandedElement.widthSet = '50%'
-            expandedElement.marginTop = expandedElement.initialHeight + 'px'
+            expandedElement.marginTop = expandedElement.madeHeigth + 'px'
             expandedElement.marginOffset = '20px'
             // vm.$el.querySelectorAll('.projectSingleInnerTitle')[expandedElement.initialIndex].style.marginLeft = '-20px'
           } else {
@@ -417,7 +425,10 @@ export default {
       // var elementsOffsetTop = offset(this.$el.querySelectorAll('.projectSingle')[index]).top
       var vm = this
       setTimeout(function() {
-        vm.$el.querySelectorAll('.projectSingle')[index].scrollIntoView({ behavior: 'smooth' });
+        // vm.$SmoothScroll(vm.$el.querySelectorAll('.projectSingle')[index], 800);
+        vm.$el.querySelectorAll('.projectSingle')[index].scrollIntoView({
+          behavior: 'smooth'
+        });
 
       }, 200)
       // this.$SmoothScroll(this.offset(this.$el.querySelectorAll('.projectSingle')[index]).top, 500);
@@ -425,12 +436,26 @@ export default {
     },
     toggleCollapse: function(index) {
 
-      this.collapsedList = false
+
+
 
       this.projectlistArray[index].expanded = !this.projectlistArray[index].expanded
 
+      if(_.some(this.projectlistArray, 'expanded')){
+        this.collapsedList = false
+      }else{
+        this.collapsedList = true
 
-      this.projectlistArray[index].initialHeight = this.$el.querySelectorAll('.projectSingleInnerTitle')[index].clientHeight
+      }
+
+
+      this.projectlistArray[index].initialHeight = this.$el.querySelectorAll('.projectSingleInnerTitle')[index].scrollHeight
+
+      var vm = this
+      setTimeout(function() {
+
+        vm.projectlistArray[index].madeHeigth = vm.$el.querySelectorAll('.projectSingleInnerTitleWrapper')[index].scrollHeight
+      }, 500)
 
 
       // var vm = this
@@ -512,6 +537,7 @@ export default {
 }
 
 #projectlist {
+  position: relative;
     clear: both;
     overflow: hidden;
     background: rgb(245, 245, 245);
@@ -561,10 +587,22 @@ export default {
 
         .projectSingleInner {
 
+            &.isExpanded {
+                // .projectTitleSmallText {
+                //     // display: none;
+                //     max-width: calc(100vw - 200px) !important;
+                // }
+            }
+
             &.isHovered {
 
+                // .projectTitleSmallText {
+                //     max-height: 300px !important;
+                // }
+
                 .projectSingleInnerTitle {
-                  z-index: 99999999999999;
+                    z-index: 99999999999999;
+
                 }
                 .projectSingleInnerTitleWrapper {
                     margin-left: 0 !important;
@@ -608,7 +646,7 @@ export default {
                     max-width: 360px;
                     // width: 360px;
                     text-overflow: ellipsis;
-                    white-space: nowrap;
+                    // white-space: nowrap;
                     overflow: hidden;
 
                     -webkit-transition: max-width $transition-timing-b;
@@ -616,6 +654,26 @@ export default {
                     -webkit-transition-delay: $transition-timing-a;
                     /* Safari */
                     transition-delay: $transition-timing-a;
+
+                    .projectTitleActual {
+                        white-space: nowrap;
+
+                    }
+                    //
+                    // .projectTitleSmallText {
+                    //     // width:300px; text-align:justify; word-break:break-all;
+                    //     max-height: 0;
+                    //     max-width: 300px;
+                    //     margin-bottom: 0;
+                    //     margin-left: 2px;
+                    //     margin-top: $defaultPadding/2;
+                    //     text-align: left !important;
+                    //
+                    //     -webkit-transition: max-height 1s;
+                    //     transition: max-height 1s;
+                    //     -webkit-transition-delay: $transition-timing-a*3;
+                    //
+                    // }
 
                 }
                 .projectTitleRight {
@@ -687,7 +745,7 @@ export default {
                     // display: inline-flex;
                     width: initial;
                     // display: flex;
-                    white-space: nowrap;
+                    // white-space: nowrap;
                     overflow: hidden;
                     padding-bottom: 12px;
                     -webkit-transition: margin-left $transition-timing-a;

@@ -4,9 +4,8 @@
 $breakpoints: (phone: 640px, tablet: 800px, desktop: 1025px);
 
 $defaultPadding: 20px;
-
 $marginx1Desktop: 70px;
-
+$paddingx1Desktop: 70px;
 $transition-timing-a: 0.5s;
 $transition-timing-b: 0.75s;
 
@@ -16,6 +15,57 @@ $transition-timing-b: 0.75s;
   @include media("<tablet") {
     font-size: 20px;
   }
+}
+
+
+.addPaddingX1{
+  padding: $paddingx1Desktop;
+}
+
+.addPaddingX1Sides{
+  padding-left: $paddingx1Desktop;
+  padding-right: $paddingx1Desktop;
+}
+
+.addPaddingX1Right{
+  padding-right: $paddingx1Desktop;
+}
+
+
+
+.addPaddingX2{
+  padding: $paddingx1Desktop*2;
+}
+
+.addPaddingX2Sides{
+  padding-left: $paddingx1Desktop*2;
+  padding-right: $paddingx1Desktop*2;
+}
+
+.addPaddingX2TopBottom{
+  padding-top: $paddingx1Desktop*2;
+  padding-bottom: $paddingx1Desktop*2;
+}
+
+.addPaddingX1TopBottom{
+  padding-top: $paddingx1Desktop;
+  padding-bottom: $paddingx1Desktop;
+}
+
+.addPaddingX2Top{
+  padding-top: $paddingx1Desktop*2;
+}
+
+.addPaddingX1Top{
+  padding-top: $paddingx1Desktop;
+}
+
+.addPaddingX2Bottom{
+  padding-bottom: $paddingx1Desktop*2;
+}
+
+.addPaddingX1Bottom{
+  padding-bottom: $paddingx1Desktop;
 }
 
 

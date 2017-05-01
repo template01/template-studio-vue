@@ -1,6 +1,14 @@
 <template>
-<div class="projectitem addMarginX2TopBottom">
+<div class="projectitem addMarginX1TopBottom">
   <div>
+    <div class="smallText additionalFirst addMarginX2Sides">
+      <div>
+        <p v-html="projectContent.title.rendered">
+        </p>
+      </div>
+
+    </div>
+
     <!-- <div class="addMarginX2Sides"  v-html="projectContent.acf['item_year']"></div> -->
     <div class="addMarginX1Sides addMarginX1Bottom" v-html="projectContent.acf['item_text']"></div>
     <swiper v-if="projectContent.acf['item_media']" :options="swiperOption" ref="mySwiper">
@@ -191,6 +199,12 @@ export default {
     -moz-animation: swiper-preloader-spin 1s infinite;
     animation: swiper-preloader-spin 1s infinite;
 }
+.additionalFirst{
+    p{
+      margin-top: 0;
+    }
+}
+
 
 .additional{
   div{
