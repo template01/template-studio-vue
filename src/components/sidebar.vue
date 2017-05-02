@@ -141,7 +141,7 @@ export default {
 
       setTimeout(function() {
         vm.$emit('emitSidebarHeight', vm.$el.querySelector('#sidebarInnerContent').scrollHeight + 40)
-        vm.$el.querySelector("#"+vm.$route.query.part).scrollIntoView({ behavior: 'smooth' });
+        // vm.$el.querySelector("#"+vm.$route.query.part).scrollIntoView({ behavior: 'smooth' });
       }, 500)
 
 

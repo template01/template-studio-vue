@@ -4,7 +4,7 @@
 
   <div id="projectlistHeader">
     <div>
-      <span @click="reorderByDigital()"><span v-if="orderedBy === 'original' || orderedBy === 'analog'">← Online</span><span v-if="orderedBy === 'digital'">← Reset</span></span>
+      <span @click="reorderByDigital()"><span v-if="orderedBy === 'original' || orderedBy === 'analog'">← Web</span><span v-if="orderedBy === 'digital'">← Reset</span></span>
     </div>
     <div>
       <transition name="fadeOpenMe">
@@ -13,7 +13,7 @@
     </div>
 
     <div>
-      <span @click="reorderByAnalog()"><span v-if="orderedBy === 'original' || orderedBy === 'digital'">Offline →</span><span v-if="orderedBy === 'analog'">Reset →</span></span>
+      <span @click="reorderByAnalog()"><span v-if="orderedBy === 'original' || orderedBy === 'digital'">Print →</span><span v-if="orderedBy === 'analog'">Reset →</span></span>
     </div>
   </div>
 
@@ -39,7 +39,7 @@
             <div class="projectControls projectControlsLeft">
               <div v-bind:style="" v-if="projectlistArray[index].expanded" class="projectControlsClose projectControlsButton">
               </div>
-              <div v-bind:style="" v-else class="projectControlsOpen projectControlsButton">
+              <div v-bind:class="returnIconClass(index)" v-else class="projectControlsOpen projectControlsButton">
               </div>
             </div>
 </template>
@@ -47,7 +47,7 @@
 <div class="projectControls projectControlsRight">
   <div v-bind:style="" v-if="projectlistArray[index].expanded" class="projectControlsClose projectControlsButton">
   </div>
-  <div v-bind:style="" v-else class="projectControlsOpen projectControlsButton">
+  <div v-bind:class="returnIconClass(index)" v-else class="projectControlsOpen projectControlsButton">
   </div>
 </div>
 <div class="projectTitle">
@@ -104,9 +104,6 @@ export default {
       // this.projectlistArray.push(video)
       var vm = this
       response.body.forEach(function(entry, index) {
-        console.log(entry.title.rendered)
-        console.log(entry.acf.item_type)
-
         // var scale = [0,3.3333,6.6666,10]
         var scale = [0, 2.5, 5, 7.5, 10]
         vm.projectlistArray.push({
@@ -136,15 +133,21 @@ export default {
       });
 
     }).then(function() {
-      this.positionTitles()
+      // this.positionTitles()
     })
   },
 
   mounted: function() {
     var vm = this
-    window.addEventListener('scroll', _.throttle(function() {
-      vm.scrollSpy()
-    }, 100));
+    if (this.$route.path === '/') {
+      var vm = this
+      setTimeout(function(){
+        vm.positionTitles()
+      },500)
+
+    }
+
+
 
     window.addEventListener('resize', _.debounce(function() {
       vm.positionTitles()
@@ -157,6 +160,29 @@ export default {
 
   },
 
+
+  watch:{
+
+    '$route' (to, from) {
+      if (to.path === '/') {
+        var vm = this
+        setTimeout(function(){
+          vm.positionTitles()
+        },500)
+
+      }
+
+
+    },
+
+    'windowheight':function(){
+      var vm = this
+
+      window.addEventListener('scroll', _.throttle(function() {
+        vm.scrollSpy()
+      }, 100));
+    }
+  },
 
 
   methods: {
@@ -176,7 +202,6 @@ export default {
     setTempHeightProjectlist: function() {
 
       this.tempHeight = this.$el.offsetHeight + "px"
-      console.log(this.$el.offsetHeight)
       var vm = this
       setTimeout(function() {
         vm.tempHeight = 'auto'
@@ -215,11 +240,7 @@ export default {
 
       setTimeout(function() {
         if (vm.projectlistArray[index].itemHovered) {
-          console.log('hye')
           vm.$set(vm.projectlistArray[index], 'itemHovered', true)
-          // vm.$set(vm.projectlistArray[index], 'marginLeft', 0 )
-
-
         }
 
       }, 500)
@@ -265,8 +286,7 @@ export default {
           var initOffsetTopList = vm.$el.offsetTop
 
 
-          var initOffsetTopElement = vm.$el.querySelectorAll('.projectSingleInnerTitle')[index].offsetTop
-
+          var initOffsetTopElement = vm.$el.querySelectorAll('.projectSingleInnerTitle')[index].offsetTop + parseFloat(vm.windowheight)
 
           var initHeightExpandedElement = vm.$el.querySelectorAll('.projectSingleInner')[index].clientHeight
 
@@ -347,31 +367,6 @@ export default {
     },
 
 
-    // positionTitlesResize: function() {
-    //   console.log('//////////////// positionTitlesResize /////////////////')
-    //
-    //   var vm = this
-    //   var marginAndPadding = 50
-    //   var windowWidth = window.innerWidth - marginAndPadding
-    //
-    //   this.projectlistArray.forEach(function(entry, index) {
-    //     var elementWidthControls = vm.$el.querySelectorAll('.projectTitle')[index].offsetWidth
-    //     var elementWidth = vm.outerWidth(vm.$el.querySelectorAll('.projectControls')[index])
-    //     var elementWidthTotal = elementWidth + elementWidthControls
-    //
-    //     vm.$set(vm.projectlistArray[index], 'marginLeft', vm.projectlistArray[index].typeScale * (window.innerWidth / 10))
-    //
-    //     var diff = windowWidth - (elementWidthTotal + vm.projectlistArray[index].marginLeft + vm.getScrollBarWidth() - 24)
-    //     console.log(vm.projectlistArray[index].marginLeft)
-    //
-    //     if (diff < 0) {
-    //       vm.$set(vm.projectlistArray[index], 'width', Math.abs(diff))
-    //     }
-    //   });
-    // },
-
-
-
     getScrollBarWidth: function() {
       var inner = document.createElement('p');
       inner.style.width = "100%";
@@ -421,6 +416,27 @@ export default {
     },
 
 
+    returnIconClass: function(index) {
+
+      // var ratio = this.projectlistArray[index].typeScale / 10;
+
+      if(this.projectlistArray[index].typeScale<3.333){
+        return 'web'
+
+      }
+      if(this.projectlistArray[index].typeScale<=6.666){
+        return 'hybrid'
+
+      }
+      if(this.projectlistArray[index].typeScale>6.666){
+        return 'print'
+
+      }
+
+    },
+
+
+
     scrollToTopofProject: function(index) {
       // var elementsOffsetTop = offset(this.$el.querySelectorAll('.projectSingle')[index]).top
       var vm = this
@@ -465,13 +481,11 @@ export default {
       // };
 
       if (this.projectlistArray[index].expanded) {
-        console.log('expanded')
         this.scrollToTopofProject(index)
 
         // window.addEventListener('scroll', this.handleScroll);
       } else {
         // window.removeEventListener('scroll', this.handleScroll);
-        console.log('closed')
         this.projectlistArray[index].position = 'initial'
         this.scrollToTopofProject(index)
       }
@@ -718,8 +732,16 @@ export default {
                     }
 
                     .projectControlsOpen {
-                        background-image: url("../assets/svg/circle.svg");
 
+                      &.web{
+                        background-image: url("../assets/svg/webcircle.svg");
+                      }
+                      &.print{
+                        background-image: url("../assets/svg/printcircle.svg");
+                      }
+                      &.hybrid{
+                        background-image: url("../assets/svg/hybridcircle.svg");
+                      }
                         // -webkit-mask: url("../assets/svg/circle.svg") no-repeat 50% 50%;
                         // mask: url("../assets/svg/circle.svg") no-repeat 50% 50%;
                         // -webkit-mask-size: cover;

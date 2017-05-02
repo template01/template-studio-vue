@@ -10,13 +10,23 @@
 
 
 
-        <div id="bottomBar">
-          <div id="">
-                  <span>
-                      Projects
-                    </span>
-                </div>
+      <div id="bottomBar">
+        <div id="projects">
+
+          <p v-if="!hideincontact" @click='goToProjectList()'>
+            Projects
+          </p>
         </div>
+        <div class="smallText" id="contact">
+          <p>
+            contact
+            <br /> contact(at)template01.info
+            <br /> +31 (0)6 57 77 28 91<br /> Mathenesserdijk 416h<br /> 3026 GV Rotterdam<br /> the Netherlands<br />
+
+
+          </p>
+        </div>
+      </div>
 
       <div id="topBar">
         <div id="template">
@@ -66,7 +76,7 @@ export default {
     sidebar,
     splashcontent
   },
-  props:['windowheight','mobile'],
+  props: ['windowheight', 'itsMobile'],
   name: '',
   data() {
     return {
@@ -77,6 +87,7 @@ export default {
       setContainerHeight: 'auto',
       setSidebarHeight: 'auto',
       contentAll: '',
+      hideincontact: false,
       mouseOverStudioShow: false,
 
 
@@ -84,11 +95,15 @@ export default {
   },
   methods: {
 
-    checkdeviceposition: function(){
-      if(this.mobile){
+    goToProjectList: function(){
+      document.querySelector("#projectlist").scrollIntoView({ behavior: "smooth" })
+    },
+
+    checkdeviceposition: function() {
+      if (this.itsMobile) {
         return 'relative'
 
-      }else{
+      } else {
         return 'fixed'
 
       }
@@ -158,24 +173,15 @@ export default {
 
     setAndCheckContainers: function(inputSidebarHeight) {
 
-
-      console.log('sidebar height: ' + inputSidebarHeight)
-      console.log('splashinner height: ' + this.$el.querySelector('#splashAreaInner').scrollHeight)
-
       if (this.$route.path === "/studio") {
-
-        console.log('studio')
 
         if (this.$el.querySelector('#splashAreaInner').scrollHeight < inputSidebarHeight) {
           this.setContainerHeight = inputSidebarHeight + 'px'
           this.setSidebarHeight = inputSidebarHeight + 'px'
 
-          console.log('small splash')
 
         } else {
-          console.log('big splash')
           this.setContainerHeight = 'auto'
-
           this.setSidebarHeight = this.$el.querySelector('#splashAreaInner').scrollHeight + 'px'
         }
 
@@ -183,7 +189,19 @@ export default {
 
         this.setContainerHeight = 'auto'
 
-        console.log('not studio')
+      }
+    },
+
+    setContainerHeightMethod: function() {
+      this.$emit('setContactAreaHeight', this.$el.querySelector("#contact").offsetHeight + 20)
+
+    },
+
+    checkHidersContact: function() {
+      if (window.scrollY > window.outerHeight - 200) {
+        this.hideincontact = true
+      } else {
+        this.hideincontact = false
 
       }
     }
@@ -201,19 +219,43 @@ export default {
 
   mounted() {
 
-
+    this.setContainerHeightMethod()
     if (this.$route.path === '/studio') {
       this.sidebar = true
 
     }
 
-    var vm = this
+
+    //
+    // if(!this.itsMobile){
+    //   // alert(this.itsMobile)
+    //   window.addEventListener('scroll', _.throttle(function() {
+    //     vm.checkHidersContact()
+    //   }, 100));
+    // }
+
 
 
   },
   watch: {
+
+    'sidebar':function(){
+      if(this.sidebar){
+        this.$emit('inStudio',true)
+      }else{
+        this.$emit('inStudio',false)
+      }
+    },
+
+    'itsMobile': function() {
+      // alert('changed')
+      var vm = this
+
+      window.addEventListener('scroll', _.throttle(function() {
+        vm.checkHidersContact()
+      }, 100));
+    },
     '$route' (to, from) {
-      console.log(to)
       if (to.path === '/studio') {
         this.sidebar = true
       }
@@ -228,7 +270,8 @@ export default {
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style lang="scss" scoped>@import "../assets/scss/base.scss";
+<style lang="scss" scoped>
+@import "../assets/scss/base.scss";
 @include media("<tablet") {
     * {
         // display: none;
@@ -253,19 +296,42 @@ export default {
     float: left;
     position: relative;
 
-    #bottomBar{
-      position: absolute;
-          // bottom: calc(50% + -30px);
-          bottom: $defaultPadding;
+    #bottomBar {
+        position: absolute;
+        width: calc(100% - 40px);
+        // bottom: calc(50% + -30px);
+        bottom: $defaultPadding;
+        p {
+            margin: 0;
+        }
+        #projects {
+            float: left;
+            width: 33.333%;
+            p {
+                position: absolute;
+                bottom: 0;
+                cursor: pointer;
+
+            }
+        }
+
+        #contact {
+            // float: right;
+            width: 66.666%;
+
+            float: right;
+            // text-align: right;
+            position: relative;
+        }
 
     }
-    #topBar{
+    #topBar {
 
-      #template {
-        float: left;
-        position: relative;
-        top: 3px;
-      }
+        #template {
+            float: left;
+            position: relative;
+            top: 3px;
+        }
 
     }
 

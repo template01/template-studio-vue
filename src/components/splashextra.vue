@@ -1,5 +1,5 @@
 <template>
-<div class="" id="splashExtra">
+<div v-bind:style="{'margin-bottom':marginBottom+'px'}" class="" id="splashExtra">
   <div  class="addPaddingX1" id="splashExtraInner">
     <p>
       Extra content?
@@ -12,7 +12,7 @@
 <script>
 export default {
   name: 'splashcontent',
-  props:['contentSplash'],
+  props:['contentSplash','marginBottom'],
   data() {
     return {
     }
