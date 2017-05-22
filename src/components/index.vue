@@ -1,6 +1,7 @@
 <template>
 <div id="index" class="">
   <splash v-on:inStudio="function(input){inStudio=input}"  v-on:setContactAreaHeight="function(input){contactAreaHeight=input}" v-bind:itsMobile="itsMobile" v-bind:windowheight="initialwindowheight"></splash>
+  <beforesplash v-if="!itsMobile"></beforesplash>
   <projectlist v-show="!inStudio" v-bind:marginTop="marginTop" v-bind:windowheight="initialwindowheight"></projectlist>
   <splashextra v-show="!inStudio" v-bind:marginBottom="itsMobile ? 0 : contactAreaHeight "></splashextra>
   <!-- <splash></splash> -->
@@ -9,6 +10,7 @@
 </template>
 
 <script>
+import beforesplash from './beforesplash'
 import projectlist from './projectlist'
 import splash from './splash'
 import splashextra from './splashextra'
@@ -16,6 +18,7 @@ export default {
   components:{
     projectlist,
     splash,
+    beforesplash,
     splashextra,
   },
   data() {

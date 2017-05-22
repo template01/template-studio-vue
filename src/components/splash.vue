@@ -11,11 +11,14 @@
 
 
       <div id="bottomBar">
-        <div id="projects">
+        <div id="projects" @click='goToProjectList()'>
 
-          <p v-if="!hideincontact" @click='goToProjectList()'>
+          <p v-if="!hideincontact" >
             Projects
           </p>
+          <div id="projectBar" :style="{'height':projectBarHeight+'px'}">
+            <span>See a selection of projects</span>
+          </div>
         </div>
         <div class="smallText" id="contact">
           <p>
@@ -92,6 +95,7 @@ export default {
       contentAll: '',
       hideincontact: false,
       mouseOverStudioShow: false,
+      projectBarHeight:0,
 
 
     }
@@ -203,12 +207,26 @@ export default {
     },
 
     checkHidersContact: function() {
-      if (window.scrollY > window.outerHeight - 200) {
+
+        var beforesplashHeight
+
+      if(document.querySelector("#beforesplash")){
+        beforesplashHeight = document.querySelector("#beforesplash").offsetHeight
+      }else{
+        beforesplashHeight = 0
+      }
+
+      if (window.scrollY > window.outerHeight + beforesplashHeight - 200) {
         this.hideincontact = true
       } else {
         this.hideincontact = false
 
       }
+    },
+
+    setHeightProjectBar: function(){
+      // this.$el
+      this.projectBarHeight = 70
     }
   },
 
@@ -225,6 +243,8 @@ export default {
   mounted() {
 
     this.setContainerHeightMethod()
+    this.setHeightProjectBar()
+
     if (this.$route.path === '/studio') {
       this.sidebar = true
 
@@ -312,10 +332,52 @@ export default {
         #projects {
             float: left;
             width: 33.333%;
+            display: inline-block;
+                height: 100%;
+            // position: absolute;
             p {
-                position: absolute;
-                bottom: 0;
+              bottom: -($defaultPadding+70);
+              padding-bottom: 70px;
+              padding-left: -$defaultPadding;
+                left: 0;
+                margin-bottom: $defaultPadding;
                 cursor: pointer;
+                position: absolute;
+                transition: bottom $transition-timing-a;
+                -webkit-transition: bottom $transition-timing-a;
+
+            }
+
+            #projectBar{
+              cursor: pointer;
+              background: green;
+              position: absolute;
+              width: calc(100% + #{$defaultPadding*2};
+              margin-left: -$defaultPadding;
+              bottom:-($defaultPadding+$marginx1Desktop);
+              height: $marginx1Desktop;
+              z-index:1;
+              transition: bottom $transition-timing-a;
+              -webkit-transition: bottom $transition-timing-a;
+              padding-left: $defaultPadding;
+
+              span{
+                color: white;
+                line-height: $marginx1Desktop;
+                text-align: center;
+                width: 100%;
+                display: block;
+              }
+            }
+
+            &:hover{
+              #projectBar{
+                bottom:-$defaultPadding;
+              }
+              p {
+                bottom:($marginx1Desktop - ($defaultPadding+70));
+
+              }
 
             }
         }
