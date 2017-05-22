@@ -2,9 +2,14 @@
 <div class="addMarginX1" id="splashContent">
   <!-- <div v-if="contentSplash.acf" v-html="contentSplash.acf.indexoneliner">
   </div> -->
+  <!-- <p>
+    Graphic studio for <span class='iconWrapper'>web<span class='icon web'></span></span>, <span class='iconWrapper'><span class='icon print'></span>print</span> and things that goes <span class='iconWrapper'><span class='icon hybrid'></span>inbetween</span>.
+  </p> -->
+
   <p>
-    Graphic studio for <span class='iconWrapper'>web<span class='icon web'></span></span>, <span class='iconWrapper'><span class='icon print'></span>print</span> and <span class='iconWrapper'><span class='icon hybrid'></span>inbetween</span>.
+    Graphic studio for <span class='iconWrapper'>web<span class='icon web'></span></span>, <span class='iconWrapper'>print<span class='icon print'></span></span> and things <span class='iconWrapper'>inbetween<span class='icon hybrid'></span></span>.
   </p>
+
 </div>
 </template>
 
@@ -65,50 +70,46 @@ export default {
         }
         &.hybrid {
             background-image: url("../assets/svg/hybridcircle.svg");
-            -webkit-animation-name: example;
-            -webkit-animation-duration: 5s;
-            animation-name: example;
-            animation-duration: 5s;
-            animation-delay: 1s;
-            animation-iteration-count: 3;
-  animation-direction: alternate;
-  animation-fill-mode: forwards;
-            position: relative;
-            top: 0px;
+
+            // -webkit-animation-name: example;
+            // -webkit-animation-duration:2s;
+            // animation-name: example;
+            // -webkit-animation-timing-function: ease-in-out;
+            // animation-timing-function: ease-in-out;
+            // animation-duration: 2s;
+            // animation-delay: 1s;
+            // animation-iteration-count: infinite;;
+            // animation-direction: alternate;
+            // animation-fill-mode: forwards;
+            // position: relative;
+            // top: 0;
 
         }
-
-        /* Safari 4.0 - 8.0 */
-        @-webkit-keyframes example {
-            0% {
-                top: 0px;
-            }
-            50% {
-                // top: -96px;
-
-            }
-            100% {
-              top: 96px;
-
-                // top: 0px;
-            }
-        }
-
-        /* Standard syntax */
-        @keyframes example {
-          0% {
-              top: 0px;
-          }
-          50% {
-            // top: 96px;
-
-          }
-          100% {
-            top: 96px;
-
-              // top: 0px;
-          }
-        }
+        //
+        // @-webkit-keyframes example {
+        //     0% {
+        //         top: 0;
+        //     }
+        //     50% {
+        //
+        //     }
+        //     100% {
+        //         top: 97px;
+        //     }
+        // }
+        //
+        // @keyframes example {
+        //     0% {
+        //         top: 0;
+        //     }
+        //     50% {
+        //
+        //     }
+        //     100% {
+        //         top: 97px;
+        //
+        //     }
+        // }
 
     }
 }

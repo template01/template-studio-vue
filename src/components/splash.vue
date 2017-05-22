@@ -19,11 +19,14 @@
         </div>
         <div class="smallText" id="contact">
           <p>
-            contact
-            <br /> contact(at)template01.info
-            <br /> +31 (0)6 57 77 28 91<br /> Mathenesserdijk 416h<br /> 3026 GV Rotterdam<br /> the Netherlands<br />
-
-
+            Get in touch:
+            <br /> hi@template-studio.nl
+            <br /> +31 (0)6 57 77 28 91<br />
+          </p>
+          <p>
+            Studio address:
+            <br /> Mathenesserdijk 416h
+            <br />Rotterdam (NL)
           </p>
         </div>
       </div>
@@ -95,8 +98,10 @@ export default {
   },
   methods: {
 
-    goToProjectList: function(){
-      document.querySelector("#projectlist").scrollIntoView({ behavior: "smooth" })
+    goToProjectList: function() {
+      document.querySelector("#projectlist").scrollIntoView({
+        behavior: "smooth"
+      })
     },
 
     checkdeviceposition: function() {
@@ -239,11 +244,11 @@ export default {
   },
   watch: {
 
-    'sidebar':function(){
-      if(this.sidebar){
-        this.$emit('inStudio',true)
-      }else{
-        this.$emit('inStudio',false)
+    'sidebar': function() {
+      if (this.sidebar) {
+        this.$emit('inStudio', true)
+      } else {
+        this.$emit('inStudio', false)
       }
     },
 
@@ -322,6 +327,12 @@ export default {
             float: right;
             // text-align: right;
             position: relative;
+
+            p{
+              width: 33.333%;
+              float: left;
+              padding-right:$defaultPadding;
+            }
         }
 
     }
