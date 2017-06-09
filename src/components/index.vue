@@ -1,9 +1,11 @@
 <template>
 <div id="index" class="">
-  <splash v-on:inStudio="function(input){inStudio=input}"  v-on:setContactAreaHeight="function(input){contactAreaHeight=input}" v-bind:itsMobile="itsMobile" v-bind:windowheight="initialwindowheight"></splash>
-  <beforesplash v-if="!itsMobile"></beforesplash>
+  <splash :popupProjectsProp="popupProjects" :popupSidebarProp="popupSidebar" v-on:inStudio="function(input){inStudio=input}"  v-on:setContactAreaHeight="function(input){contactAreaHeight=input}" v-bind:itsMobile="itsMobile" v-bind:windowheight="initialwindowheight" :passedAnimateSidebarAndProject="animateSplashContentInProp">
+    <splashcontent v-on:popupSidebar="popupSidebar = true" v-on:popupProjects="popupProjects = true" :passedAnimateSplashContentInProp="animateSplashContentInProp"></splashcontent>
+  </splash>
+  <beforesplash v-on:animateSplashContentIn="animateSplashContentInProp = true" v-if="!itsMobile"></beforesplash>
   <projectlist v-show="!inStudio" v-bind:marginTop="marginTop" v-bind:windowheight="initialwindowheight"></projectlist>
-  <splashextra v-show="!inStudio" v-bind:marginBottom="itsMobile ? 0 : contactAreaHeight "></splashextra>
+  <splashextra v-show="!inStudio" v-bind:marginBottom="itsMobile ? 0 : contactAreaHeight + 20"></splashextra>
   <!-- <splash></splash> -->
 
 </div>
@@ -14,12 +16,15 @@ import beforesplash from './beforesplash'
 import projectlist from './projectlist'
 import splash from './splash'
 import splashextra from './splashextra'
+import splashcontent from './splashcontent'
+
 export default {
   components:{
     projectlist,
     splash,
     beforesplash,
     splashextra,
+    splashcontent
   },
   data() {
     return {
@@ -29,6 +34,9 @@ export default {
       contactAreaHeight:'0',
       itsMobile:true,
       inStudio:false,
+      animateSplashContentInProp:false,
+      popupSidebar: false,
+      popupProjects: false,
 
     }
   },
@@ -41,9 +49,29 @@ export default {
       this.marginTop = '0px'
 
     }
+
+    if(this.$route.path != '/'){
+      this.animateSplashContentInProp = true
+    }
+    var vm = this
+    window.addEventListener('resize', _.debounce(function() {
+      vm.setSplashHeight()
+
+    }, 250));
+
   },
 
   methods:{
+    setSplashHeight:function(){
+
+      this.initialwindowheight= window.innerHeight +"px"
+      this.marginTop = this.initialwindowheight
+
+
+
+
+    },
+
     checkMobile:function(){
 
 
@@ -101,7 +129,10 @@ export default {
 }
 
 #index{
-  font-family: Karla;
+  // font-family: Reader;
+  font-family:'Relative Book';
+  // font-family:'Relative Faux';
+  // font-family:'Relative';
   font-size: 40px;
   // font-weight:
   @include media("<tablet") {

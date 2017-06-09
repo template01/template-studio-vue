@@ -16,11 +16,38 @@
         <span @click="setQueryAndScroll('sidebarWhere')">Where</span>
 
       </div>
-      <div id="sidebarWho" class="sidebarElement" v-if="contentSidebar.acf" v-html="contentSidebar.acf.indexblurb"></div>
-      <div id="sidebarWhat" class="sidebarElement" v-if="contentSidebar.acf" v-html="contentSidebar.acf.indexblurb"></div>
-      <div id="sidebarWhere" class="sidebarElement" v-if="contentSidebar.acf" v-html="contentSidebar.acf.indexblurb"></div>
+      <div id="sidebarWhat" class="sidebarElement" v-if="contentSidebar.acf">
 
-      <span id="camera">camera</span>
+        <div v-for="item in contentSidebar.acf.sidebar_what">
+          <div v-if="item.acf_fc_layout==='text'" v-html="item.text">
+          </div>
+          <div class="circularImage" v-if="item.acf_fc_layout==='image'">
+            <img :src="item.image_circular.url"/>
+          </div>
+        </div>
+      </div>
+      <div id="sidebarWho" class="sidebarElement" v-if="contentSidebar.acf">
+
+        <div v-for="item in contentSidebar.acf.sidebar_who">
+          <div v-if="item.acf_fc_layout==='text'" v-html="item.text">
+          </div>
+          <div class="circularImage" v-if="item.acf_fc_layout==='image'">
+            <img :src="item.image_circular.url"/>
+          </div>
+        </div>
+      </div>
+
+      <div id="sidebarWhere" class="sidebarElement" v-if="contentSidebar.acf">
+
+        <div v-for="item in contentSidebar.acf.sidebar_where">
+          <div v-if="item.acf_fc_layout==='text'" v-html="item.text">
+          </div>
+          <div class="circularImage" v-if="item.acf_fc_layout==='image'">
+            <img :src="item.image_circular.url"/>
+          </div>
+        </div>
+      </div>
+      <!-- <span id="camera">camera</span> -->
 
     </div>
     <div id="sidebarBackground">
@@ -75,7 +102,9 @@ export default {
       if (Number.isInteger(id)) {
         setTimeout(function() {
 
-          vm.$el.querySelector("#"+id).scrollIntoView({ behavior: 'smooth' });
+          vm.$el.querySelector("#" + id).scrollIntoView({
+            behavior: 'smooth'
+          });
 
 
           // vm.$SmoothScroll(id, 500);
@@ -83,7 +112,9 @@ export default {
 
       } else {
         setTimeout(function() {
-          vm.$el.querySelector("#"+id).scrollIntoView({ behavior: 'smooth' });
+          vm.$el.querySelector("#" + id).scrollIntoView({
+            behavior: 'smooth'
+          });
 
           // vm.$SmoothScroll(vm.$el.querySelector("#" + id), 500);
         }, timeout)
@@ -191,30 +222,28 @@ export default {
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style lang="scss" scoped>@import "../assets/scss/base.scss";
+<style lang="scss" scoped>
+@import "../assets/scss/base.scss";
 @include media("<tablet") {
     * {
         // display: none;
     }
 }
 
-
 #sidebar {
 
+    #sidebarBackground {
+        // background: red;
+        background: green;
+        position: fixed;
+        width: calc(100% - 173px);
+        height: 90px;
+        margin-top: -$defaultPadding;
+        margin-left: -$defaultPadding;
+        @include media("<tablet") {
+            width: 100%;
 
-    #sidebarBackground{
-      // background: red;
-      background: green;
-      position: fixed;
-      width: calc(100% - 173px);
-      height: 90px;
-      margin-top: -$defaultPadding;
-      margin-left: -$defaultPadding;
-      @include media("<tablet") {
-        width: 100%;
-
-      }
-
+        }
 
     }
 
@@ -224,7 +253,6 @@ export default {
         margin-top: -$defaultPadding*2;
 
     }
-
 
     #sidebarInnerWrapper {
         width: 100%;
@@ -253,17 +281,27 @@ export default {
     }
 
     #sidebarInnerContent {
-        top: 3px;
         position: relative;
         width: calc(100% - 70px);
         float: left;
         padding-right: $marginx1Desktop;
         margin-left: $marginx1Desktop;
+
+        .circularImage{
+          width: 100%;
+          img{
+            width: 100%;
+            
+            margin: 0 auto;
+            display: block;
+            border-radius: 100%;
+          }
+        }
     }
 
     #sidebarInnerContentActual {}
 
-    color: rgb(242, 242, 242);
+    color: #fffdf5;
     // min-height: 100vh;
     overflow: hidden;
     height: auto;
@@ -299,19 +337,18 @@ export default {
     z-index: 9;
 }
 </style>
-<style lang="scss">@import "../assets/scss/base.scss";
+<style lang="scss">
+@import "../assets/scss/base.scss";
 
 #sidebarInnerContentActual {
-  &>*:first-child {
-    margin-top: 0;
-  }
+    & > *:first-child {
+        margin-top: 0;
+    }
 }
 
 .sidebarElement {
-  &>*:first-child {
-    margin-top: $marginx1Desktop;
-  }
+    & > *:first-child {
+        margin-top: $marginx1Desktop;
+    }
 }
-
-
 </style>

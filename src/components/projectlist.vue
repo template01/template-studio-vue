@@ -126,7 +126,7 @@ export default {
           'backgroundStyle': {
             // active: true,
             // 'text-danger': false
-            'background': '#ffe268'
+            'background': entry.acf.background_color
           }
           // 'marginLeft': ((Math.floor(Math.random() * 11)) * 1) * (window.innerWidth / 10),
         })
@@ -554,7 +554,7 @@ export default {
   position: relative;
     clear: both;
     overflow: hidden;
-    background: rgb(245, 245, 245);
+    background: #fffdf5;
     // position: relative;
     // height: 100%;
     // display: grid;
@@ -591,7 +591,7 @@ export default {
 
     .projectSingle {
 
-        background: rgb(245, 245, 245);
+        background: #fffdf5;
 
         width: 100%;
         border-bottom: 3px solid black;
@@ -631,7 +631,7 @@ export default {
                 }
             };
 
-            padding: 15px 20px 10px;
+            padding: 8px 12px 5px;
 
             .projectSingleInnerContent {
                 // max-height: 500px;
@@ -660,9 +660,11 @@ export default {
                     max-width: 360px;
                     // width: 360px;
                     text-overflow: ellipsis;
-                    // white-space: nowrap;
+                    white-space: nowrap;
                     overflow: hidden;
-
+                    // overflow-x: hidden;
+                    // overflow-y: auto;
+                    padding-bottom: 6px;
                     -webkit-transition: max-width $transition-timing-b;
                     transition: max-width $transition-timing-b;
                     -webkit-transition-delay: $transition-timing-a;
@@ -752,13 +754,12 @@ export default {
                 }
 
                 .projectSingleInnerTitleBackground {
-                    background: rgb(245, 245, 245);
+                    background: #fffdf5;
                     left: 0;
                     position: fixed;
                     top: 0;
                     height: inherit;
                     width: 100%;
-                    // z-index: ;
                 }
 
                 .projectSingleInnerTitleWrapper {
@@ -769,7 +770,7 @@ export default {
                     // display: flex;
                     // white-space: nowrap;
                     overflow: hidden;
-                    padding-bottom: 12px;
+                    padding-bottom: 6px;
                     -webkit-transition: margin-left $transition-timing-a;
                     transition: margin-left $transition-timing-a;
                     -webkit-transition-delay: $transition-timing-b;

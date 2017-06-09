@@ -11,7 +11,10 @@ export default {
 </script>
 
 
-<style src="./assets/fonts/CourierPrime/stylesheet.css"></style>
+<!-- <style src="./assets/fonts/CourierPrime/stylesheet.css"></style> -->
+<!-- <style src="./assets/fonts/readerMedium/stylesheet.css"></style> -->
+<!-- <style src="./assets/fonts/readerRegular/stylesheet.css"></style> -->
+<style src="./assets/fonts/relative/stylesheet.css"></style>
 <style>
 #app {
 }

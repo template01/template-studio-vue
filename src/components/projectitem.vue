@@ -14,9 +14,23 @@
     <swiper v-if="projectContent.acf['item_media']" :options="swiperOption" ref="mySwiper">
       <!-- slides -->
       <!-- {{projectContent.acf['item_media']}} -->
-      <swiper-slide v-bind:style="{'height':initialSwiperHeight}" class="maxWidthAdjustedToMarginX1" v-for="image in projectContent.acf['item_media']" :key="image">
+      <swiper-slide v-bind:style="{'height':initialSwiperHeight}" class="maxWidthAdjustedToMarginX1 maxWidth1920" v-for="image in projectContent.acf['item_media']" :key="image">
         <!-- <img width="100%" v-bind:src="projectContent.acf['customfeaturedimage'].url" /> -->
-        <img width="100%" v-bind:data-src="image.image.url" class="swiper-lazy" />
+
+        <!-- {{projectContent.acf['item_media']}} -->
+
+        <div v-if="image.web_frame" class="webFrame">
+          <div class="webFrameButtons">
+            <span class="dot"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+          </div>
+          <img width="100%" v-bind:data-src="image.image.url" class="swiper-lazy" />
+        </div>
+
+        <img v-else width="100%" v-bind:data-src="image.image.url" class="swiper-lazy" />
+
+
         <div class="swiper-lazy-preloader">WAIT</div>
 
         <p v-if="showLabel" v-html="image.label"></p>
@@ -164,6 +178,41 @@ export default {
     }
 }
 
+
+.webFrame{
+  border: 1px solid black;
+  border-top: 1px solid black;
+  border-bottom: 3px solid black;
+  border-radius: 5px;
+  margin-top: 20px;
+
+  -webkit-box-shadow: 0px 0px 30px -5px rgba(0,0,0,0.75);
+  -moz-box-shadow: 0px 0px 30px -5px rgba(0,0,0,0.75);
+  box-shadow: 0px 0px 30px -5px rgba(0,0,0,0.75);
+
+  img{
+
+    display: block;
+  }
+
+  .webFrameButtons{
+    width: 100%;
+    height: 16px;
+    background: black;
+
+    .dot{
+      background: #fffdf5;
+      width: 10px;
+      height: 10px;
+      top: 3px;
+      position: relative;
+      float: right;
+      margin-right: 5px;
+      border-radius: 100%;
+    }
+  }
+}
+
 .swiper-slide {
     p {
       margin-top: 0;
@@ -222,6 +271,7 @@ export default {
     padding-left: 70px;
     padding-right: 70px;
 }
+
 @include media("<tablet") {
     * {
         // display: none;

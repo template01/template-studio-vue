@@ -3,7 +3,7 @@
 
 $breakpoints: (phone: 640px, tablet: 800px, desktop: 1025px);
 
-$defaultPadding: 20px;
+$defaultPadding: 12px;
 $marginx1Desktop: 70px;
 $paddingx1Desktop: 70px;
 $transition-timing-a: 0.5s;
@@ -12,8 +12,8 @@ $transition-timing-b: 0.75s;
 
 .smallText{
   font-size: 20px;
-  @include media("<tablet") {
-    font-size: 20px;
+  @include media("<desktop") {
+    font-size: 15px;
   }
 }
 

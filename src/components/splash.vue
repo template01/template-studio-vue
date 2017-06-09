@@ -1,23 +1,18 @@
 <template>
 <div v-bind:style="[{position: sidebar ? 'relative' :checkdeviceposition() ,'min-height':windowheight}]" id="splashAreaWrapper">
 
-
-
-
   <div v-bind:style="{'height':setContainerHeight}" v-bind:class="{collapsedSplash:sidebar}" id="splashArea" class="">
 
     <div id="splashAreaInner" v-bind:style="{'min-height':windowheight}">
 
-
-
       <div id="bottomBar">
-        <div id="projects" @click='goToProjectList()'>
+        <div id="projects" @click='goToProjectList()' @mouseover="mouseOverProjects()" @mouseout="mouseOffProjects()" v-bind:class="[{ isHovered: mouseOverProjectsShow }]">
 
           <p v-if="!hideincontact" >
             Projects
           </p>
-          <div id="projectBar" :style="{'height':projectBarHeight+'px'}">
-            <span>See a selection of projects</span>
+          <div id="projectBar" :style="{'bottom':-1*(projectBarHeight+20)+'px','height':projectBarHeight+'px'}">
+            <span :style="{'line-height':projectBarHeight+'px'}">A selection of projects</span>
           </div>
         </div>
         <div class="smallText" id="contact">
@@ -49,13 +44,14 @@
         </span>
         <div id="toggleSidebarWrapper">
           <div class="openButton">
+            <span>Read more about our studio</span>
           </div>
         </div>
       </div>
 
 
-      <splashcontent v-bind:contentSplash="contentAll"></splashcontent>
-
+      <!-- <splashcontent v-bind:contentSplash="contentAll"></splashcontent> -->
+      <slot   v-bind:contentSplash="contentAll"></slot>
 
 
       <!-- <router-link :to="{ path: '/studio', query: {part:'camera'}}">Camera</router-link> -->
@@ -75,14 +71,14 @@
 
 <script>
 import sidebar from './sidebar'
-import splashcontent from './splashcontent'
+// import splashcontent from './splashcontent'
 
 export default {
   components: {
     sidebar,
-    splashcontent
+    // splashcontent
   },
-  props: ['windowheight', 'itsMobile'],
+  props: ['windowheight', 'itsMobile','passedAnimateSidebarAndProject','popupSidebarProp','popupProjectsProp'],
   name: '',
   data() {
     return {
@@ -95,6 +91,7 @@ export default {
       contentAll: '',
       hideincontact: false,
       mouseOverStudioShow: false,
+      mouseOverProjectsShow: false,
       projectBarHeight:0,
 
 
@@ -119,13 +116,30 @@ export default {
     },
 
 
+    mouseOverProjects: function() {
+      // if (!this.sidebar) {
+        // this.mouseOverStudioShow = true
+        this.mouseOverProjectsShow = true
+
+      // }
+    },
+    mouseOffProjects: function() {
+      this.mouseOverProjectsShow = false
+      // this.mouseOverStudioShow = true
+
+    },
+
+
     mouseOverStudio: function() {
       if (!this.sidebar) {
+        // this.mouseOverStudioShow = true
         this.mouseOverStudioShow = true
+
       }
     },
     mouseOffStudio: function() {
       this.mouseOverStudioShow = false
+      // this.mouseOverStudioShow = true
 
     },
     toggleSidebar: function() {
@@ -226,12 +240,12 @@ export default {
 
     setHeightProjectBar: function(){
       // this.$el
-      this.projectBarHeight = 70
+      this.projectBarHeight = this.$el.querySelector('#bottomBar').offsetHeight + 36
     }
   },
 
   created: function() {
-    this.$http.get('http://api.template-studio.nl/wp-json/wp/v2/pages').then(function(response) {
+    this.$http.get('http://api.template-studio.nl/wp-json/wp/v2/pages?slug=index').then(function(response) {
       this.contentAll = response.body[0]
     }).then(function() {
 
@@ -263,6 +277,50 @@ export default {
 
   },
   watch: {
+
+    'popupSidebarProp': function(){
+      var vm = this
+      vm.mouseOverStudioShow = true
+
+      setTimeout(function(){
+        vm.mouseOverStudioShow = false
+      },2000)
+    },
+
+
+    'popupProjectsProp': function(){
+      var vm = this
+      vm.mouseOverProjectsShow = true
+
+
+      setTimeout(function(){
+        vm.mouseOverProjectsShow = false
+      },2000)
+    },
+
+    'passedAnimateSidebarAndProject': function() {
+      // alert('change')
+      if(this.$route.path ==='/'){
+        // var vm = this
+        // setTimeout(function(){
+        //   vm.mouseOverStudioShow = true
+        // },2000)
+        //
+        // setTimeout(function(){
+        //   vm.mouseOverStudioShow = false
+        // },4000)
+        //
+        // setTimeout(function(){
+        //   vm.mouseOverProjectsShow = true
+        // },6000)
+        //
+        // setTimeout(function(){
+        //   vm.mouseOverProjectsShow = false
+        // },10000)
+      }
+
+
+    },
 
     'sidebar': function() {
       if (this.sidebar) {
@@ -304,7 +362,7 @@ export default {
 }
 
 #splashAreaWrapper {
-    background: rgb(242, 242, 242);
+    background: #fffdf5;
 
     display: flex;
 
@@ -336,7 +394,7 @@ export default {
                 height: 100%;
             // position: absolute;
             p {
-              bottom: -($defaultPadding+70);
+              bottom: -($defaultPadding+70+8);
               padding-bottom: 70px;
               padding-left: -$defaultPadding;
                 left: 0;
@@ -370,12 +428,12 @@ export default {
               }
             }
 
-            &:hover{
+            &.isHovered{
               #projectBar{
-                bottom:-$defaultPadding;
+                bottom:-$defaultPadding !important;
               }
               p {
-                bottom:($marginx1Desktop - ($defaultPadding+70));
+                bottom:($marginx1Desktop - (70-10));
 
               }
 
@@ -392,6 +450,11 @@ export default {
 
             p{
               width: 33.333%;
+              @include media("<desktop") {
+                width: 50%;
+              }
+
+
               float: left;
               padding-right:$defaultPadding;
             }
@@ -403,14 +466,17 @@ export default {
         #template {
             float: left;
             position: relative;
-            top: 3px;
         }
+
+        line-height: $marginx1Desktop;
 
     }
 
     #toggleSidebar {
 
         #studio {
+          line-height: $marginx1Desktop;
+
             padding-right: $defaultPadding;
             margin-right: -$defaultPadding;
 
@@ -429,7 +495,6 @@ export default {
         float: right;
         text-align: right;
         position: relative;
-        top: 3px;
 
         cursor: pointer;
 
@@ -437,22 +502,40 @@ export default {
             width: $defaultPadding * 2 + 30;
             // margin-left: $defaultPadding*2;
             background: green;
-            color: rgb(242, 242, 242);
+            color: #fffdf5;
             position: absolute;
             right: - $defaultPadding * 2 - 30 - $defaultPadding;
             height: 100vh;
-            top: -$defaultPadding - 3px;
+            top: 0;
             padding-top: $defaultPadding;
             padding-left: $defaultPadding/2;
             padding-right: $defaultPadding/2;
             .openButton {
-                width: 50px;
-                height: 50px;
+                // width: 50px;
+                // height: 50px;
                 cursor: pointer;
-                background-size: cover;
-                background-position: center;
-                background-image: url("../assets/svg/sidew.svg");
-                background-size: cover;
+                // background-size: cover;
+                // background-position: center;
+                // background-image: url("../assets/svg/sidew.svg");
+                // background-size: cover;
+
+                span {
+                    -webkit-transform: rotate(90deg);
+                    -moz-transform: rotate(90deg);
+                    -ms-transform: rotate(90deg);
+                    -o-transform: rotate(90deg);
+                     left: -$marginx1Desktop/2;
+                    // margin-top: -10px;
+                    left: calc(-50vh + 28px);
+                    position: absolute;
+                    /* text-align: center; */
+                    top: calc(50vh - 14px);
+                    width: 100vh;
+                    text-align: center;
+
+                }
+
+
             }
         }
     }
@@ -469,7 +552,9 @@ export default {
     transition: margin-left $transition-timing-a;
     -webkit-transition: margin-left $transition-timing-a;
     #splashAreaInner {
-        padding: $defaultPadding;
+      padding-right: $defaultPadding;
+      padding-left: $defaultPadding;
+        padding-bottom: $defaultPadding;
         min-height: 1000px;
         width: 100%;
         top: 0;

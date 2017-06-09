@@ -42,11 +42,11 @@ export default {
   margin-bottom: 90px;
   position: relative;
   display: block;
-  background: rgb(242,242,242);
+  background: #fffdf5;
 
   clear: both;
   #splashExtraInner{
-    background: rgb(242,242,242);
+    background: #fffdf5;
 
   }
   p{
